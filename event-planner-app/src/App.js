@@ -31,9 +31,9 @@ class App extends Component {
         });
     };
 
-    handleSubmit(event) {
+    handleSubmit = (event) => {
         if (this.state.startDate > this.state.endDate){
-            throw new Error('Invalid Input!');
+            alert("Hello! I am an alert box!!");
     }
         else{
             this.downloadTxtFile()
