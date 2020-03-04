@@ -31,6 +31,15 @@ class App extends Component {
         });
     };
 
+    handleSubmit(event) {
+        if (this.state.startDate > this.state.endDate){
+            throw new Error('Invalid Input!');
+    }
+        else{
+            this.downloadTxtFile()
+        }
+}
+
     downloadTxtFile = () => {
         const newEvent = {
             BEGIN: 'VCALENDAR',
@@ -73,7 +82,7 @@ class App extends Component {
     render() {
       return (
         <div className='post'>
-          <form onSubmit={this.downloadTxtFile}>
+          <form onSubmit={this.handleSubmit}>
             <div>
               <label>Title:
                 <input onChange={this.handleTitle} />
