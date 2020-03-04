@@ -3,6 +3,8 @@ import './App.css';
 class App extends Component {
     state = {
         titleInput: '',
+        startDate: new Date(),
+        endDate: new Date(),
         description: ''
     };
 
@@ -18,6 +20,17 @@ class App extends Component {
       });
     };
 
+    handleStartDate = (event) => {
+        this.setState({
+            startDate: event.target.value,
+        });
+    };
+    handleEndDate = (event) => {
+        this.setState({
+            endDate: event.target.value
+        });
+    };
+
     downloadTxtFile = () => {
         const newEvent = {
             BEGIN: 'VCALENDAR',
@@ -26,8 +39,8 @@ class App extends Component {
             BEGIN2: 'VEVENT',
             DTSTAMP: '2020026T230518Z',
             UID: '20200215T230518Z-1655380985@test.com',
-            DTSTART: '20200227',
-            DTEND: '20200228',
+            DTSTART: this.state.startDate,
+            DTEND: this.state.endDate,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description,
             END2: 'VEVENT',
@@ -65,6 +78,16 @@ class App extends Component {
               <label>Title:
                 <input onChange={this.handleTitle} />
               </label>
+            </div>
+            <div>
+               <label>Start Time:
+                   <input onChange={this.handleStartDate} />
+               </label>
+            </div>
+            <div>
+                <label>End Time:
+                    <input onChange = {this.handleEndDate} />
+                </label>
             </div>
             <div>
               <label>Description:
