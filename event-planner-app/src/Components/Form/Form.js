@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
 import DescriptionInput from '../Input/DescriptionInput';
+import Classification from '../Input/Classification';
 
 class Form extends Component {
     state = {
         titleInput: '',
-        description: ''
+        description: '',
+        classification: 'PUBLIC'
     };
 
     handleTitle = (event) => {
@@ -18,6 +20,12 @@ class Form extends Component {
       this.setState({
           description: event.target.value,
       });
+    };
+
+    handleClassification = (event) => {
+        this.setState({
+            classification: event.target.value
+        });
     };
 
     /************************************************************
@@ -46,6 +54,7 @@ class Form extends Component {
             UID: '20200215T230518Z-1655380985@test.com',
             DTSTART: '20200227',
             DTEND: '20200228',
+            CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.foldLine(this.state.description.replace(/\n/gi,'\\n')),
             END2: 'VEVENT',
@@ -85,6 +94,7 @@ class Form extends Component {
                 <form onSubmit={this.downloadTxtFile}>
                     <TitleInput change={this.handleTitle} />
                     <DescriptionInput change={this.handleDescription} />
+                    <Classification value={this.state.classification} change={this.handleClassification} />
                     <input type="submit" value="Submit" />
                 </form>
             </div>
