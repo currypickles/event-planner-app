@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
 import DescriptionInput from '../Input/DescriptionInput';
 import Classification from '../Input/Classification';
+import PriorityInput from '../Input/PriorityInput';
 
 class Form extends Component {
     state = {
         titleInput: '',
         description: '',
-        classification: 'PUBLIC'
+        classification: 'PUBLIC',
+        priority: '0'
     };
 
     handleTitle = (event) => {
@@ -25,6 +27,12 @@ class Form extends Component {
     handleClassification = (event) => {
         this.setState({
             classification: event.target.value
+        });
+    };
+
+    handlePriority = (event) => {
+        this.setState({
+            priority: event.target.value
         });
     };
 
@@ -48,12 +56,13 @@ class Form extends Component {
         const newEvent = {
             BEGIN: 'VCALENDAR',
             VERSION: '2.0',
-            PRODID: 'www.website.com',
+            PRODID: 'team-curry-pickles-iCal',
             BEGIN2: 'VEVENT',
+            PRIORITY: this.state.priority,
             DTSTAMP: '2020026T230518Z',
-            UID: '20200215T230518Z-1655380985@test.com',
-            DTSTART: '20200227',
-            DTEND: '20200228',
+            UID: Math.random().toString(), // Placeholder for now 
+            DTSTART: '20200306T120000',
+            DTEND: '20200306T130000',
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.foldLine(this.state.description.replace(/\n/gi,'\\n')),
@@ -95,6 +104,7 @@ class Form extends Component {
                     <TitleInput change={this.handleTitle} />
                     <DescriptionInput change={this.handleDescription} />
                     <Classification value={this.state.classification} change={this.handleClassification} />
+                    <PriorityInput value={this.state.priority} change={this.handlePriority} />
                     <input type="submit" value="Submit" />
                 </form>
             </div>
