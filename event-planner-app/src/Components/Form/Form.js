@@ -20,6 +20,22 @@ class Form extends Component {
       });
     };
 
+    /************************************************************
+    * Lines of text should not be longer that 75 octets. 
+    * This function splits long content lines in to multiple lines 
+    *************************************************************/
+    foldLine(line) {
+        const parts = [];
+        let length = 75;
+        while(line.length > length) {
+            parts.push(line.slice(0, length));
+            line = line.slice(length)
+            length = 74;
+        }
+        parts.push(line);
+        return parts.join('\r\n\t');
+    }
+
     downloadTxtFile = () => {
         const newEvent = {
             BEGIN: 'VCALENDAR',
@@ -31,25 +47,29 @@ class Form extends Component {
             DTSTART: '20200227',
             DTEND: '20200228',
             SUMMARY: this.state.titleInput,
-            DESCRIPTION: this.state.description,
+            DESCRIPTION: this.foldLine(this.state.description.replace(/\n/gi,'\\n')),
             END2: 'VEVENT',
             END: 'VCALENDAR',
         }
 
+        // Iterates over the newEvent object and puts each key and value into
+        // an event array with the format - key:value as a string
         const event = [];
         for(let el in newEvent) {
             event.push(`${el}:${newEvent[el]}\n`);
         }
 
+        // Iterates over the event array and removes any numerical value from 
+        // the key BEGIN and END. 
         event.forEach( (el,index) => {
             const [ first, second ] = el.split(':');
-            if (first === 'BEGIN2') {
+            if (first.match(/BEGIN[0-9]/)) {
                 event[index] = `BEGIN:${second}`;
             }
-            if (first === 'END2') {
+            if (first.match(/END[0-9]/)) {
                 event[index] = `END:${second}`;
             }
-        });
+        });  
 
         const element = document.createElement("a");
         const file = new Blob(event, {type: 'text/plain;charset=utf-8'});
