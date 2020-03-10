@@ -12,28 +12,8 @@ class Form extends Component {
         priority: '0'
     };
 
-    handleTitle = (event) => {
-        this.setState({
-            titleInput: event.target.value,
-        });
-    };
-
-    handleDescription = (event) => {
-      this.setState({
-          description: event.target.value,
-      });
-    };
-
-    handleClassification = (event) => {
-        this.setState({
-            classification: event.target.value
-        });
-    };
-
-    handlePriority = (event) => {
-        this.setState({
-            priority: event.target.value
-        });
+    handleFormControl = (event) => {
+        this.setState({ [event.target.name]: event.target.value });
     };
 
     /************************************************************
@@ -49,14 +29,14 @@ class Form extends Component {
             length = 74;
         }
         parts.push(line);
-        return parts.join('\r\n\t');
+        return parts.join('\r\n ');
     }
 
     downloadTxtFile = () => {
         const newEvent = {
             BEGIN: 'VCALENDAR',
             VERSION: '2.0',
-            PRODID: 'team-curry-pickles-iCal',
+            PRODID: '-//Team Curry Pickles//Ical Event App//EN',
             BEGIN2: 'VEVENT',
             PRIORITY: this.state.priority,
             DTSTAMP: '2020026T230518Z',
@@ -74,20 +54,19 @@ class Form extends Component {
         // an event array with the format - key:value as a string
         const event = [];
         for(let el in newEvent) {
+            let str = '';
+            if (el.match(/BEGIN[0-9]/)) {
+                str = `BEGIN:${newEvent[el]}\n`;
+                event.push(str);
+                continue;
+            }
+            if (el.match(/END[0-9]/)) {
+                str = `END:${newEvent[el]}\n`;
+                event.push(str);
+                continue;
+            }
             event.push(`${el}:${newEvent[el]}\n`);
         }
-
-        // Iterates over the event array and removes any numerical value from 
-        // the key BEGIN and END. 
-        event.forEach( (el,index) => {
-            const [ first, second ] = el.split(':');
-            if (first.match(/BEGIN[0-9]/)) {
-                event[index] = `BEGIN:${second}`;
-            }
-            if (first.match(/END[0-9]/)) {
-                event[index] = `END:${second}`;
-            }
-        });  
 
         const element = document.createElement("a");
         const file = new Blob(event, {type: 'text/plain;charset=utf-8'});
@@ -100,11 +79,11 @@ class Form extends Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.downloadTxtFile}>
-                    <TitleInput change={this.handleTitle} />
-                    <DescriptionInput change={this.handleDescription} />
-                    <Classification value={this.state.classification} change={this.handleClassification} />
-                    <PriorityInput value={this.state.priority} change={this.handlePriority} />
+                <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
+                    <TitleInput name='titleInput' />
+                    <DescriptionInput name='description' />
+                    <Classification name='classification' />
+                    <PriorityInput name='priority' />
                     <input type="submit" value="Submit" />
                 </form>
             </div>

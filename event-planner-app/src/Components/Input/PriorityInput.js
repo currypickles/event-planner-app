@@ -3,7 +3,7 @@ import React from 'react';
 const priorityInput = (props)  => (
     <div>
         <label>Priority:
-            <select value={props.value} onChange={props.change}>
+            <select name={props.name} defaultValue='0' >
                 <option value='0'>0</option>
                 <option value='1'>1</option>
                 <option value='2'>2</option>

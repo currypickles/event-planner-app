@@ -3,7 +3,7 @@ import React from 'react';
 const classification = (props)  => (
     <div>
         <label>Classification:
-            <select value={props.value} onChange={props.change}>
+            <select name={props.name} defaultValue='PUBLIC' >
                 <option value='PUBLIC'>Public</option>
                 <option value='PRIVATE'>Private</option>
                 <option value='CONFIDENTIAL'>Confidential</option>

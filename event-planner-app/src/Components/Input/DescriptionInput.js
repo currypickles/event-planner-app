@@ -3,7 +3,7 @@ import React from 'react';
 const descriptionInput = (props)  => (
     <div>
         <label>Description:
-            <textarea onChange={props.change} required />
+            <textarea type='text' name={props.name} required />
         </label>
     </div>
 );
