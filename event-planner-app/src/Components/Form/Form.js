@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
+import TimeStart from '../Input/TimeStart';
+import TimeEnd from '../Input/TimeEnd';
 import DescriptionInput from '../Input/DescriptionInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
@@ -7,6 +9,8 @@ import PriorityInput from '../Input/PriorityInput';
 class Form extends Component {
     state = {
         titleInput: '',
+        startDate: new Date(),
+        endDate: new Date(),
         description: '',
         classification: 'PUBLIC',
         priority: '0'
@@ -15,6 +19,17 @@ class Form extends Component {
     handleTitle = (event) => {
         this.setState({
             titleInput: event.target.value,
+        });
+    };
+
+    handleStartDate = (event) => {
+        this.setState({
+            startDate: event.target.value,
+        });
+    };
+    handleEndDate = (event) => {
+        this.setState({
+            endDate: event.target.value
         });
     };
 
@@ -35,6 +50,15 @@ class Form extends Component {
             priority: event.target.value
         });
     };
+
+    handleSubmit = (event) => {
+        if (this.state.startDate > this.state.endDate){
+            alert("Hello! I am an alert box!!");
+        }
+        else{
+            this.downloadTxtFile()
+        }
+    }
 
     /************************************************************
     * Lines of text should not be longer that 75 octets. 
@@ -61,8 +85,8 @@ class Form extends Component {
             PRIORITY: this.state.priority,
             DTSTAMP: '2020026T230518Z',
             UID: Math.random().toString(), // Placeholder for now 
-            DTSTART: '20200306T120000',
-            DTEND: '20200306T130000',
+            DTSTART: this.state.startDate,
+            DTEND: this.state.endDate,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.foldLine(this.state.description.replace(/\n/gi,'\\n')),
@@ -100,8 +124,10 @@ class Form extends Component {
     render() {
         return (
             <div>
-                <form onSubmit={this.downloadTxtFile}>
+                <form onSubmit={this.handleSubmit}>
                     <TitleInput change={this.handleTitle} />
+                    <TimeStart change={this.handleStartDate}/>
+                    <TimeEnd change={this.handleEndDate}/>
                     <DescriptionInput change={this.handleDescription} />
                     <Classification value={this.state.classification} change={this.handleClassification} />
                     <PriorityInput value={this.state.priority} change={this.handlePriority} />
