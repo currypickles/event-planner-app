@@ -3,17 +3,36 @@ import TitleInput from '../Input/TitleInput';
 import DescriptionInput from '../Input/DescriptionInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
+import Attendees from '../Input/Attendees/Attendees';
 
 class Form extends Component {
     state = {
         titleInput: '',
         description: '',
         classification: 'PUBLIC',
-        priority: '0'
+        priority: '0',
+        attendees: [],
+    };
+
+    handleNumAttendees = (event) => {
+        this.setState(prevState => ({
+            attendees: [...prevState.attendees, {
+                participationStatus: 'NEEDS-ACTION',
+                participationRole: 'REQ-PARTICIPANT',
+                rsvp: 'FALSE',
+                mailto: ''
+            }]
+        }));
     };
 
     handleFormControl = (event) => {
-        this.setState({ [event.target.name]: event.target.value });
+        if (['mailto', 'rsvp'].includes(event.target.className)) {
+            let attendees = [...this.state.attendees];
+            attendees[event.target.dataset.id][event.target.className] = event.target.value;
+            this.setState({ attendees }, () => console.log(this.state.attendees));
+        } else {
+            this.setState({ [event.target.name]: event.target.value });
+        }
     };
 
     /************************************************************
@@ -32,7 +51,8 @@ class Form extends Component {
         return parts.join('\r\n ');
     }
 
-    downloadTxtFile = () => {
+    downloadTxtFile = (e) => {
+        e.preventDefault();
         const newEvent = {
             BEGIN: 'VCALENDAR',
             VERSION: '2.0',
@@ -46,6 +66,7 @@ class Form extends Component {
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.foldLine(this.state.description.replace(/\n/gi,'\\n')),
+            ATTENDEE: [...this.state.attendees],
             END2: 'VEVENT',
             END: 'VCALENDAR',
         }
@@ -63,6 +84,13 @@ class Form extends Component {
             if (el.match(/END[0-9]/)) {
                 str = `END:${newEvent[el]}\n`;
                 event.push(str);
+                continue;
+            }
+            if (el.match('ATTENDEE')) {
+                newEvent[el].forEach((x,i) => {
+                    str = `${el};PARTSTAT=${newEvent[el][i].participationStatus};ROLE=${newEvent[el][i].participationRole};RSVP=${newEvent[el][i].rsvp}:mailto:${newEvent[el][i].mailto}\n`;
+                    event.push(this.foldLine(str));
+                });
                 continue;
             }
             event.push(`${el}:${newEvent[el]}\n`);
@@ -84,6 +112,9 @@ class Form extends Component {
                     <DescriptionInput name='description' />
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
+                    <Attendees attendees={this.state.attendees} 
+                               numAttendees={this.state.attendeesNum} 
+                               handleNumAttendees={this.handleNumAttendees} />
                     <input type="submit" value="Submit" />
                 </form>
             </div>
