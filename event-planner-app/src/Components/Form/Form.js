@@ -22,12 +22,12 @@ class Form extends Component {
         };
     }
 
-    myCallback1 = (startFromChild) => {
+    myCallback = (startFromChild) => {
         this.setState({startDate: startFromChild})
     }
 
-    myCallback2 = (startFromChild) => {
-        this.setState({startDate: startFromChild})
+    myCallback2 = (endFromChild) => {
+        this.setState({endDate: endFromChild})
     }
 
     handleTitle = (event) => {
@@ -140,8 +140,8 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.handleSubmit}>
                     <TitleInput change={this.handleTitle} />
-                    <Example change={this.myCallback1}/>
-                    <Example2 change={this.myCallback2}/>
+                    <Example callBackFromParent={this.myCallback}/>
+                    <Example2 callBackFromParent2={this.myCallback2}/>
                     <DescriptionInput change={this.handleDescription} />
                     <Classification value={this.state.classification} change={this.handleClassification} />
                     <PriorityInput value={this.state.priority} change={this.handlePriority} />

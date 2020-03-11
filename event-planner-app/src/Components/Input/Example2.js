@@ -12,7 +12,7 @@ class Example2 extends React.Component {
     };
 
     someFn2 = () => {
-        this.props.myCallback2(this.state.startDate)
+        this.props.callBackFromParent2(this.state.startDate)
     };
 
     handleChange = date => {

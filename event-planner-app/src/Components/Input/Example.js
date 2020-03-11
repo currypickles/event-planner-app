@@ -11,15 +11,15 @@ class Example extends React.Component {
         startDate: new Date()
     };
 
-    someFn1 = () => {
-        this.props.myCallback1(this.state.startDate)
+    someFn = () => {
+        this.props.callBackFromParent(this.state.startDate);
     };
+
 
     handleChange = date => {
         this.setState({
             startDate: date
         });
-        this.props.change()
     };
 
     render() {
