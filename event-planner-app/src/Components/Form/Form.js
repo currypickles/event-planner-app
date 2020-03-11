@@ -5,16 +5,30 @@ import TimeEnd from '../Input/TimeEnd';
 import DescriptionInput from '../Input/DescriptionInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
+import Example from '../Input/Example';
+import Example2 from '../Input/Example2';
 
 class Form extends Component {
-    state = {
-        titleInput: '',
-        startDate: new Date(),
-        endDate: new Date(),
-        description: '',
-        classification: 'PUBLIC',
-        priority: '0'
-    };
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            titleInput: '',
+            startDate: null,
+            endDate: null,
+            description: '',
+            classification: 'PUBLIC',
+            priority: '0'
+        };
+    }
+
+    myCallback1 = (startFromChild) => {
+        this.setState({startDate: startFromChild})
+    }
+
+    myCallback2 = (startFromChild) => {
+        this.setState({startDate: startFromChild})
+    }
 
     handleTitle = (event) => {
         this.setState({
@@ -126,8 +140,8 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.handleSubmit}>
                     <TitleInput change={this.handleTitle} />
-                    <TimeStart change={this.handleStartDate}/>
-                    <TimeEnd change={this.handleEndDate}/>
+                    <Example change={this.myCallback1}/>
+                    <Example2 change={this.myCallback2}/>
                     <DescriptionInput change={this.handleDescription} />
                     <Classification value={this.state.classification} change={this.handleClassification} />
                     <PriorityInput value={this.state.priority} change={this.handlePriority} />
