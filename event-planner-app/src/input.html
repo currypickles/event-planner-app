@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calender Creater</title>
+</head>
+<body>
+<div id="body">
+
+    <section class="content-wrapper main-content clear-fix">
+
+
+        <h1>Create .ics files</h1>
+
+
+            <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+            </script>
+
+
+        <form action="/home/result" method="post" novalidate="novalidate">    <table class="tbl">
+            <tbody>
+            <tr>
+                <td>Event Name:</td>
+                <td>
+                    <input data-val="true" data-val-required="The Name field is required." id="Name" name="Name" type="text" value="">
+                </td>
+            </tr>
+            <tr>
+                <td>Start Time:</td>
+                <td>
+                    <input autocomplete="off" class="datetime hasDatepicker" data-val="true" data-val-date="The field Start Time must be a date." data-val-required="The Start Time field is required." id="StartTime" name="StartTime" type="text" value="">
+                </td>
+            </tr>
+            <tr>
+                <td>End Time:</td>
+                <td>
+                    <input autocomplete="off" class="datetime hasDatepicker" data-val="true" data-val-date="The field End Time must be a date." data-val-required="The End Time field is required." id="EndTime" name="EndTime" type="text" value="">
+                </td>
+            </tr>
+            <tr>
+                <td>Location:</td>
+                <td>
+                    <input id="Location" name="Location" type="text" value="">
+                </td>
+            </tr>
+            <tr>
+                <td>Description:</td>
+                <td>
+                    <textarea cols="20" id="Description" name="Description" rows="2"></textarea>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+            </form>
+    </section>
+</div>
+</body>
+</html>
