@@ -9,7 +9,8 @@
     "ics": "^2.19.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "react-datepicker": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,34 +1,21 @@
 import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
-import TimeStart from '../Input/TimeStart';
-import TimeEnd from '../Input/TimeEnd';
 import DescriptionInput from '../Input/DescriptionInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
-import Example from '../Input/Example';
-import Example2 from '../Input/Example2';
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 class Form extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
+        state = {
             titleInput: '',
-            startDate: null,
-            endDate: null,
+            startDate: new Date(),
+            endDate: new Date(),
             description: '',
             classification: 'PUBLIC',
             priority: '0'
         };
-    }
-
-    myCallback = (startFromChild) => {
-        this.setState({startDate: startFromChild})
-    }
-
-    myCallback2 = (endFromChild) => {
-        this.setState({endDate: endFromChild})
-    }
 
     handleTitle = (event) => {
         this.setState({
@@ -36,14 +23,15 @@ class Form extends Component {
         });
     };
 
-    handleStartDate = (event) => {
+    handleChange = date => {
         this.setState({
-            startDate: event.target.value,
+            startDate: date
         });
     };
-    handleEndDate = (event) => {
+
+    handleChange2 = date => {
         this.setState({
-            endDate: event.target.value
+            endDate: date
         });
     };
 
@@ -140,8 +128,18 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.handleSubmit}>
                     <TitleInput change={this.handleTitle} />
-                    <Example callBackFromParent={this.myCallback}/>
-                    <Example2 callBackFromParent2={this.myCallback2}/>
+                    <DatePicker selected={this.state.startDate}
+                                onChange={date => this.handleChange(date)}
+                                showTimeSelect
+                                timeIntervals={15}
+                                timeCaption="Time"
+                                dateFormat="h:mm aa" />
+                    <DatePicker selected={this.state.endDate}
+                                onChange={date => this.handleChange2(date)}
+                                showTimeSelect
+                                timeIntervals={15}
+                                timeCaption="Time"
+                                dateFormat="h:mm aa" />
                     <DescriptionInput change={this.handleDescription} />
                     <Classification value={this.state.classification} change={this.handleClassification} />
                     <PriorityInput value={this.state.priority} change={this.handlePriority} />

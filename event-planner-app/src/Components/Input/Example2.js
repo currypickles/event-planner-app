@@ -7,9 +7,13 @@ import "react-datepicker/dist/react-datepicker.css";
 // import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 
 class Example2 extends React.Component {
-    state = {
-        startDate: new Date()
-    };
+    constructor(props) {
+        super(props);
+        console.log(this.props)
+        this.state = {
+            startDate: new Date()
+        };
+    }
 
     someFn2 = () => {
         this.props.callBackFromParent2(this.state.startDate)
