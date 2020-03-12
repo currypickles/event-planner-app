@@ -65,7 +65,7 @@ class Form extends Component {
             DTEND: '20200306T130000',
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
-            DESCRIPTION: this.foldLine(this.state.description.replace(/\n/gi,'\\n')),
+            DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             ATTENDEE: [...this.state.attendees],
             END2: 'VEVENT',
             END: 'VCALENDAR',
@@ -93,7 +93,8 @@ class Form extends Component {
                 });
                 continue;
             }
-            event.push(`${el}:${newEvent[el]}\n`);
+            str = `${el}:${newEvent[el]}\r\n`;
+            event.push(this.foldLine(str));
         }
 
         const element = document.createElement("a");
