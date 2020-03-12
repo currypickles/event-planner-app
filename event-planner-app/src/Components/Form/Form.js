@@ -5,6 +5,7 @@ import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
+import ResourcesInput from '../Input/ResourcesInput';
 
 class Form extends Component {
     state = {
@@ -13,7 +14,8 @@ class Form extends Component {
         classification: 'PUBLIC',
         priority: '0',
         attendees: [],
-        organizer: ''
+        organizer: '',
+        resources: ''
     };
 
     handleNumAttendees = (event) => {
@@ -70,6 +72,7 @@ class Form extends Component {
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
+            RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
             END2: 'VEVENT',
             END: 'VCALENDAR',
         }
@@ -125,6 +128,7 @@ class Form extends Component {
                     <Attendees attendees={this.state.attendees} 
                                numAttendees={this.state.attendeesNum} 
                                handleNumAttendees={this.handleNumAttendees} />
+                    <ResourcesInput name='resources' />
                     <input type="submit" value="Submit" />
                 </form>
             </div>
