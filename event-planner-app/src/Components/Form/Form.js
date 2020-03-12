@@ -4,6 +4,7 @@ import DescriptionInput from '../Input/DescriptionInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
+import OrganizerInput from '../Input/OrganizerInput';
 
 class Form extends Component {
     state = {
@@ -12,6 +13,7 @@ class Form extends Component {
         classification: 'PUBLIC',
         priority: '0',
         attendees: [],
+        organizer: ''
     };
 
     handleNumAttendees = (event) => {
@@ -66,6 +68,7 @@ class Form extends Component {
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
+            ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             END2: 'VEVENT',
             END: 'VCALENDAR',
@@ -84,6 +87,11 @@ class Form extends Component {
             if (el.match(/END[0-9]/)) {
                 str = `END:${newEvent[el]}\n`;
                 event.push(str);
+                continue;
+            }
+            if (el.match('ORGANIZER')) {
+                str = `${el};SENT-BY="mailto:${newEvent[el]}":mailto:${newEvent[el]}\n`
+                event.push(this.foldLine(str));
                 continue;
             }
             if (el.match('ATTENDEE')) {
@@ -113,6 +121,7 @@ class Form extends Component {
                     <DescriptionInput name='description' />
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
+                    <OrganizerInput name='organizer' />
                     <Attendees attendees={this.state.attendees} 
                                numAttendees={this.state.attendeesNum} 
                                handleNumAttendees={this.handleNumAttendees} />
