@@ -1,9 +1,10 @@
 import React from 'react';
+import './Input.css';
 
 const priorityInput = (props)  => (
     <div>
         <label>Priority:
-            <select name={props.name} defaultValue='0' >
+            <select name={props.name} defaultValue='0' className='select-margin'>
                 <option value='0'>0</option>
                 <option value='1'>1</option>
                 <option value='2'>2</option>

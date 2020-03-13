@@ -1,0 +1,10 @@
+.box-inline {
+    display: inline-block;
+    float: left;
+    max-width: 200px;
+    min-width:200px;
+}
+
+.select-margin {
+    margin-top: 5px;
+}

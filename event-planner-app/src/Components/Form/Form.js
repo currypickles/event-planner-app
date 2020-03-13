@@ -6,6 +6,7 @@ import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
+import './Form.css';
 
 class Form extends Component {
     state = {

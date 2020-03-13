@@ -1,4 +1,5 @@
 import React from 'react';
+import './Attendee.css'
 
 const attendee = (props)  => {
     const [ mailtoId, rsvpId ] = [...props.ids];
@@ -11,8 +12,8 @@ const attendee = (props)  => {
                        id={mailtoId}
                        className='mailto' />
             </label>
-            <label>RSVP
-                <select values={props.values.rsvp} name={rsvpId} data-id={props.dataId} id={rsvpId} className='rsvp'>
+            <label className='rsvp-style'>RSVP:
+                <select values={props.values.rsvp} name={rsvpId} data-id={props.dataId} id={rsvpId} className='rsvp rsvp-select'>
                     <option value='FALSE'>FALSE</option>
                     <option value='TRUE'>TRUE</option>
                 </select>
