@@ -11,13 +11,19 @@ import './Form.css';
 class Form extends Component {
     state = {
         titleInput: '',
+        titleCharCounter: 0,
         description: '',
+        desCharCounter: 0,
         classification: 'PUBLIC',
         priority: '0',
         attendees: [],
         organizer: '',
         resources: ''
     };
+
+    handleCharLimit = (event) => {
+        this.setState({ [event.target.id]: event.target.value.length });
+    }
 
     handleNumAttendees = (event) => {
         this.setState(prevState => ({
@@ -121,8 +127,8 @@ class Form extends Component {
         return (
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
-                    <TitleInput name='titleInput' />
-                    <DescriptionInput name='description' />
+                    <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} />
+                    <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' />
