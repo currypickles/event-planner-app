@@ -3,7 +3,7 @@ import React from 'react';
 const resourcesInput = (props)  => (
     <div>
         <label>Resources:
-            <input type='text' name={props.name} required />
+            <input type='text' name={props.name} />
         </label>
     </div>
 );

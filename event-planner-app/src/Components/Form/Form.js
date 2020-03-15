@@ -18,7 +18,11 @@ class Form extends Component {
         priority: '0',
         attendees: [],
         organizer: '',
-        resources: ''
+        resources: '',
+        errors: {
+            titleErrMsg: '',
+            emailErrMsg: ''
+        }
     };
 
     handleCharLimit = (event) => {
@@ -62,8 +66,28 @@ class Form extends Component {
         return parts.join('\r\n ');
     }
 
+    validateForm(name, email) {
+        const validEmailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
+        let errors = {};
+        if (name.length === 0 || (name.length >= 0 && name.trim() === '')) {
+            errors = { ...errors, titleErrMsg: 'Title is required!' };
+        }
+        if (email.length > 0 && !email.match(validEmailRegex)) {
+            errors = { ...errors, emailErrMsg: 'Email is invalid' };
+        }
+        return errors;
+    }
+
     downloadTxtFile = (e) => {
         e.preventDefault();
+
+        const errors = this.validateForm(this.state.titleInput, this.state.organizer);
+        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg')) {
+            this.setState({ errors });
+            console.log(errors)
+            return;
+        }
+
         const newEvent = {
             BEGIN: 'VCALENDAR',
             VERSION: '2.0',
@@ -100,16 +124,23 @@ class Form extends Component {
                 continue;
             }
             if (el.match('ORGANIZER')) {
+                if (newEvent[el] === '') { continue; }
                 str = `${el};SENT-BY="mailto:${newEvent[el]}":mailto:${newEvent[el]}\n`
                 event.push(this.foldLine(str));
                 continue;
             }
             if (el.match('ATTENDEE')) {
                 newEvent[el].forEach((x,i) => {
-                    str = `${el};PARTSTAT=${newEvent[el][i].participationStatus};ROLE=${newEvent[el][i].participationRole};RSVP=${newEvent[el][i].rsvp}:mailto:${newEvent[el][i].mailto}\n`;
-                    event.push(this.foldLine(str));
+                    if (newEvent[el][i].mailto === '') {
+                    } else {
+                        str = `${el};PARTSTAT=${newEvent[el][i].participationStatus};ROLE=${newEvent[el][i].participationRole};RSVP=${newEvent[el][i].rsvp}:mailto:${newEvent[el][i].mailto}\n`;
+                        event.push(this.foldLine(str));
+                    }
                 });
                 continue;
+            }
+            if (el.match('RESOURCES')) {
+                if (newEvent[el] === '') { continue; }
             }
             str = `${el}:${newEvent[el]}\r\n`;
             event.push(this.foldLine(str));
@@ -127,11 +158,11 @@ class Form extends Component {
         return (
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
-                    <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} />
+                    <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
-                    <OrganizerInput name='organizer' />
+                    <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />
                     <Attendees attendees={this.state.attendees} 
                                numAttendees={this.state.attendeesNum} 
                                handleNumAttendees={this.handleNumAttendees} />
