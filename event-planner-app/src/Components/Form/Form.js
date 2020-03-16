@@ -46,7 +46,7 @@ class Form extends Component {
             attendees[event.target.dataset.id][event.target.className] = event.target.value;
             this.setState({ attendees }, () => console.log(this.state.attendees));
         } else {
-            this.setState({ [event.target.name]: event.target.value });
+            this.setState({ errors: {isTyping: false}, [event.target.name]: event.target.value });
         }
     };
 
