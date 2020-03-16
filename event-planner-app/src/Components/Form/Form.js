@@ -73,7 +73,7 @@ class Form extends Component {
             errors = { ...errors, titleErrMsg: 'Title is required!' };
         }
         if (email.length > 0 && !email.match(validEmailRegex)) {
-            errors = { ...errors, emailErrMsg: 'Email is invalid' };
+            errors = { ...errors, emailErrMsg: 'Email is invalid!' };
         }
         return errors;
     }
