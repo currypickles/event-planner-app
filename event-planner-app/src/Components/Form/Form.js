@@ -123,18 +123,18 @@ class Form extends Component {
         for(let el in newEvent) {
             let str = '';
             if (el.match(/BEGIN[0-9]/)) {
-                str = `BEGIN:${newEvent[el]}\n`;
+                str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
                 continue;
             }
             if (el.match(/END[0-9]/)) {
-                str = `END:${newEvent[el]}\n`;
+                str = `END:${newEvent[el]}\r\n`;
                 event.push(str);
                 continue;
             }
             if (el.match('ORGANIZER')) {
                 if (newEvent[el] === '') { continue; }
-                str = `${el};SENT-BY="mailto:${newEvent[el]}":mailto:${newEvent[el]}\n`
+                str = `${el};SENT-BY="mailto:${newEvent[el]}":mailto:${newEvent[el]}\r\n`
                 event.push(this.foldLine(str));
                 continue;
             }
@@ -142,7 +142,7 @@ class Form extends Component {
                 newEvent[el].forEach((x,i) => {
                     if (newEvent[el][i].mailto === '') {
                     } else {
-                        str = `${el};PARTSTAT=${newEvent[el][i].participationStatus};ROLE=${newEvent[el][i].participationRole};RSVP=${newEvent[el][i].rsvp}:mailto:${newEvent[el][i].mailto}\n`;
+                        str = `${el};PARTSTAT=${newEvent[el][i].participationStatus};ROLE=${newEvent[el][i].participationRole};RSVP=${newEvent[el][i].rsvp}:mailto:${newEvent[el][i].mailto}\r\n`;
                         event.push(this.foldLine(str));
                     }
                 });
