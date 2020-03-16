@@ -13,7 +13,7 @@ const attendee = (props)  => {
                        className='mailto' />
             </label>
             <label className='rsvp-style'>RSVP:
-                <select values={props.values.rsvp} name={rsvpId} data-id={props.dataId} id={rsvpId} className='rsvp rsvp-select'>
+                <select values={props.values.rsvp} name={rsvpId} data-id={props.dataId} id={rsvpId} className='rsvp'>
                     <option value='FALSE'>FALSE</option>
                     <option value='TRUE'>TRUE</option>
                 </select>
