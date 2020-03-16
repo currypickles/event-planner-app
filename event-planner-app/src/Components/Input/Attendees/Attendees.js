@@ -13,6 +13,7 @@ const attendees = (props)  => {
                     values={props.attendees[idx]}
                     key={idx} />
             })}
+            <label style={{fontSize: '10px', color: 'red'}}>{props.errMsg}</label>
         </div>
     );
 };

@@ -6,7 +6,7 @@ const attendee = (props)  => {
     return (
         <div>
             <label>Attendee:
-                <input type='email' 
+                <input type='text' 
                        name={mailtoId} 
                        data-id={props.dataId} 
                        id={mailtoId}

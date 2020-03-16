@@ -21,7 +21,8 @@ class Form extends Component {
         resources: '',
         errors: {
             titleErrMsg: '',
-            emailErrMsg: ''
+            emailErrMsg: '',
+            attendeeErrMsg: ''
         }
     };
 
@@ -44,7 +45,7 @@ class Form extends Component {
         if (['mailto', 'rsvp'].includes(event.target.className)) {
             let attendees = [...this.state.attendees];
             attendees[event.target.dataset.id][event.target.className] = event.target.value;
-            this.setState({ attendees }, () => console.log(this.state.attendees));
+            this.setState({ errors: {isTyping: false}, attendees }, () => console.log(this.state.attendees));
         } else {
             this.setState({ errors: {isTyping: false}, [event.target.name]: event.target.value });
         }
@@ -66,7 +67,7 @@ class Form extends Component {
         return parts.join('\r\n ');
     }
 
-    validateForm(name, email) {
+    validateForm(name, email, attendee) {
         const validEmailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
         let errors = {};
         if (name.length === 0 || (name.length >= 0 && name.trim() === '')) {
@@ -75,14 +76,22 @@ class Form extends Component {
         if (email.length > 0 && !email.match(validEmailRegex)) {
             errors = { ...errors, emailErrMsg: 'Email is invalid!' };
         }
+        attendee.forEach((x, i) => {
+            if (x.length > 0 && !x.match(validEmailRegex)) {
+                errors = { ...errors, attendeeErrMsg: 'Email is invalid!' }
+            }
+            if (x.length > 0 && (attendee.indexOf(x) !== i || x === email)) {
+                errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
+            }
+        });
         return errors;
     }
 
     downloadTxtFile = (e) => {
         e.preventDefault();
 
-        const errors = this.validateForm(this.state.titleInput, this.state.organizer);
-        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg')) {
+        const errors = this.validateForm(this.state.titleInput, this.state.organizer, this.state.attendees.map(x => x.mailto));
+        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg') || errors.hasOwnProperty('attendeeErrMsg')) {
             this.setState({ errors });
             console.log(errors)
             return;
@@ -165,7 +174,8 @@ class Form extends Component {
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />
                     <Attendees attendees={this.state.attendees} 
                                numAttendees={this.state.attendeesNum} 
-                               handleNumAttendees={this.handleNumAttendees} />
+                               handleNumAttendees={this.handleNumAttendees} 
+                               errMsg={this.state.errors.attendeeErrMsg} />
                     <ResourcesInput name='resources' />
                     <input type="submit" value="Submit" />
                 </form>
