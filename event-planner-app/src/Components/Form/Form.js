@@ -10,6 +10,7 @@ import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
 import './Form.css';
+import DatePicker from "react-datepicker";
 
 class Form extends Component {
     state = {
