@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
+import GeoInput from '../Input/GeoInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
@@ -15,6 +16,7 @@ class Form extends Component {
         titleCharCounter: 0,
         description: '',
         location: '',
+        geo: { lat: 0, lon: 0 },
         desCharCounter: 0,
         classification: 'PUBLIC',
         priority: '0',
@@ -31,6 +33,11 @@ class Form extends Component {
     handleCharLimit = (event) => {
         this.setState({ [event.target.id]: event.target.value.length });
     }
+
+    // handleGeoFormat = (event) => {
+    //     var latlon = event.target.value.split(';');
+    //     this.setState({geo: {lat: latlon[0], lon:latlon[1]}});
+    // }
 
     handleNumAttendees = (event) => {
         this.setState(prevState => ({
@@ -99,6 +106,13 @@ class Form extends Component {
             return;
         }
 
+        var latlon = this.state.geo.split(';');
+        var myLat = parseFloat(latlon[0]);
+        var myLon = parseFloat(latlon[1]);
+        this.setState({geo: {lat: myLat, lon: myLon}});
+
+
+
         const newEvent = {
             BEGIN: 'VCALENDAR',
             VERSION: '2.0',
@@ -113,12 +127,13 @@ class Form extends Component {
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
+            GEO: this.state.geo,
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
             END2: 'VEVENT',
             END: 'VCALENDAR',
-        }
+        };
 
         // Iterates over the newEvent object and puts each key and value into
         // an event array with the format - key:value as a string
@@ -173,6 +188,7 @@ class Form extends Component {
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <LocationInput name='location' />
+                    <GeoInput name='geo' />
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />

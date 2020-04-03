@@ -1,6 +1,6 @@
 import React from 'react';
 
-const resourcesInput = (props)  => (
+const locationInput = (props)  => (
     <div>
         <label>Location:
             <input type='text' name={props.name} />
@@ -8,4 +8,4 @@ const resourcesInput = (props)  => (
     </div>
 );
 
-export default resourcesInput;
+export default locationInput;
