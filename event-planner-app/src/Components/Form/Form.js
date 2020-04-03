@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
+import Timezone from '../Input/Timezone';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
 import GeoInput from '../Input/GeoInput';
@@ -13,6 +14,7 @@ import './Form.css';
 class Form extends Component {
     state = {
         titleInput: '',
+        timezone: 'HST',
         titleCharCounter: 0,
         description: '',
         location: '',
@@ -125,6 +127,7 @@ class Form extends Component {
             DTEND: '20200306T130000',
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
+            TZID: this.state.timezone,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
             GEO: this.state.geo,
@@ -186,6 +189,7 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
+                    <Timezone name='timezone' />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <LocationInput name='location' />
                     <GeoInput name='geo' />
