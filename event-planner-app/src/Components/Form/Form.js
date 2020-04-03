@@ -11,6 +11,7 @@ import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
 import './Form.css';
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 class Form extends Component {
     state = {
@@ -33,6 +34,18 @@ class Form extends Component {
             emailErrMsg: '',
             attendeeErrMsg: ''
         }
+    };
+
+    handleChange = date => {
+        this.setState({
+            startDate: date
+        });
+    };
+
+    handleChange2 = date => {
+        this.setState({
+            endDate: date
+        });
     };
 
     handleCharLimit = (event) => {
@@ -126,8 +139,8 @@ class Form extends Component {
             PRIORITY: this.state.priority,
             DTSTAMP: '2020026T230518Z',
             UID: Math.random().toString(), // Placeholder for now 
-            DTSTART: '20200306T120000',
-            DTEND: '20200306T130000',
+            DTSTART: this.state.startDate,
+            DTEND: this.state.endDate,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             TZID: this.state.timezone,
@@ -146,6 +159,82 @@ class Form extends Component {
         const event = [];
         for(let el in newEvent) {
             let str = '';
+            const months = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07',
+                Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
+            if(el.match('DTSTART')) {
+                let seconds, minutes, hours, num_hours, month, day, year;
+                console.log(newEvent[el].toString());
+                str = newEvent[el].toString().substr(4,20);
+                month = str.substr(0,3);
+                day = str.substr(4,2);
+                year = str.substr(7,4);
+
+                hours = str.substr(12, 2);
+                num_hours = parseInt(hours);
+                switch (this.state.timezone) {
+                    case 'HST':
+                        num_hours = num_hours + 10;
+                        break;
+                    case 'GMT-7':
+                        num_hours = num_hours + 7;
+                        break;
+                    default:
+                }
+                if (hours < 0) {
+                    hours += 24;
+                } else if (hours > 24) {
+                    hours -= 24;
+                }
+                hours = num_hours.toString();
+                if (hours.length === 1) {
+                    let zero = '0';
+                    hours = zero + hours;
+                }
+
+                minutes = str.substr(15, 2);
+                seconds = str.substr(18, 2);
+                str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
+                console.log(str);
+                event.push(str);
+                continue;
+            }
+            if(el.match('DTEND')) {
+                let seconds2, minutes2, hours2, num_hours2, month2, day2, year2;
+                console.log(newEvent[el].toString());
+                str = newEvent[el].toString().substr(4,20);
+                month2 = str.substr(0,3);
+                day2 = str.substr(4,2);
+                year2 = str.substr(7,4);
+
+                hours2 = str.substr(12, 2);
+                num_hours2 = parseInt(hours2);
+                switch (this.state.timezone) {
+                    case 'HST':
+                        num_hours2 = num_hours2 + 10;
+                        break;
+                    case 'GMT-7':
+                        num_hours2 = num_hours2 + 7;
+                        break;
+                    default:
+                }
+                if (hours2 < 0) {
+                    hours2 += 24;
+                } else if (hours2 > 24) {
+                    hours2 -= 24;
+                }
+                hours2 = num_hours2.toString();
+                if (hours2.length === 1) {
+                    let zero = '0';
+                    hours2 = zero + hours2;
+                }
+
+                minutes2 = str.substr(15, 2);
+                seconds2 = str.substr(18, 2);
+                str = `${el}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\n`
+                console.log(str);
+                event.push(str);
+                continue;
+            }
             if (el.match(/BEGIN[0-9]/)) {
                 str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
