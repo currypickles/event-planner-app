@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
 import DescriptionInput from '../Input/DescriptionInput';
+import LocationInput from '../Input/LocationInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
@@ -13,6 +14,7 @@ class Form extends Component {
         titleInput: '',
         titleCharCounter: 0,
         description: '',
+        location: '',
         desCharCounter: 0,
         classification: 'PUBLIC',
         priority: '0',
@@ -110,6 +112,7 @@ class Form extends Component {
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
+            LOCATION: this.state.location,
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
@@ -169,6 +172,7 @@ class Form extends Component {
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
+                    <LocationInput name='location' />
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />
