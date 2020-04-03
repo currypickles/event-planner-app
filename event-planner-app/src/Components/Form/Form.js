@@ -15,6 +15,8 @@ import DatePicker from "react-datepicker";
 class Form extends Component {
     state = {
         titleInput: '',
+        startDate: new Date(),
+        endDate: new Date(),
         timezone: 'HST',
         titleCharCounter: 0,
         description: '',
@@ -190,6 +192,18 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
+                    <DatePicker selected={this.state.startDate}
+                                onChange={date => this.handleChange(date)}
+                                showTimeSelect
+                                timeIntervals={15}
+                                timeCaption="Time"
+                                dateFormat="h:mm aa" />
+                    <DatePicker selected={this.state.endDate}
+                                onChange={date => this.handleChange2(date)}
+                                showTimeSelect
+                                timeIntervals={15}
+                                timeCaption="Time"
+                                dateFormat="h:mm aa" />
                     <Timezone name='timezone' />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <LocationInput name='location' />
