@@ -51,6 +51,10 @@ class Form extends Component {
         });
     };
 
+    handleRecurrenceDate = date => {
+        this.setState({ recurrenceDate: date });
+    }
+
     handleCharLimit = (event) => {
         this.setState({ [event.target.id]: event.target.value.length });
     }
@@ -144,6 +148,7 @@ class Form extends Component {
             UID: Math.random().toString(), // Placeholder for now 
             DTSTART: this.state.startDate,
             DTEND: this.state.endDate,
+            RRULE: this.state.recurrenceFreq,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             TZID: this.state.timezone,
@@ -238,6 +243,12 @@ class Form extends Component {
                 event.push(str);
                 continue;
             }
+            if (el.match('RRULE')) {
+                if (newEvent[el] === 'ONCE') { continue; }
+                str = `${el}:FREQ=${newEvent[el]};UNTIL=${this.state.recurrenceDate}\r\n`;
+                event.push(this.foldLine(str));
+                continue;
+            }
             if (el.match(/BEGIN[0-9]/)) {
                 str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
@@ -297,7 +308,7 @@ class Form extends Component {
                                 timeCaption="Time"
                                 dateFormat="MMMM d, yyyy h:mm aa" />
                     <Timezone name='timezone' />
-                    <Recurrence name='recurrenceFreq' recur={this.state.recurrenceFreq} date={this.state.recurrenceDate} />
+                    <Recurrence name='recurrenceFreq' recur={this.state.recurrenceFreq} date={date => this.handleRecurrenceDate(date)} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <LocationInput name='location' />
                     {/*<GeoInput name='geo' />*/}
