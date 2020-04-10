@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const recurrence = (props)  => {
     const datePicker = props.recur !== 'ONCE' ? 
         <label>Until:
-            <DatePicker selected={new Date()}
+            <DatePicker selected={props.selected}
                     onChange={props.date}
                     showTimeSelect
                     timeIntervals={15}

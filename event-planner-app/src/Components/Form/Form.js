@@ -289,7 +289,6 @@ class Form extends Component {
             }
             if (el.match('RRULE')) {
                 if (newEvent[el] === 'ONCE') { continue; }
-                str = newEvent[el].toString().substr(4,20);
                 const time = this.timeFormat(str, this.state.recurrenceDate);
                 str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                 event.push(this.foldLine(str));
@@ -354,8 +353,11 @@ class Form extends Component {
                                 timeCaption="Time"
                                 dateFormat="MMMM d, yyyy h:mm aa" />
                     <Timezone name='timezone' />
-                    <Recurrence name='recurrenceFreq' recur={this.state.recurrenceFreq} date={date => this.handleRecurrenceDate(date)} />
-                    <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
+                    <Recurrence name='recurrenceFreq' 
+                                selected={this.state.recurrenceDate} 
+                                recur={this.state.recurrenceFreq} 
+                                date={date => this.handleRecurrenceDate(date)} />
+                    <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
                     <LocationInput name='location' />
                     {/*<GeoInput name='geo' />*/}
                     <Classification name='classification' />
