@@ -9,6 +9,7 @@ import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
+import Recurrence from '../Input/Recurrence';
 import './Form.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -29,6 +30,8 @@ class Form extends Component {
         attendees: [],
         organizer: '',
         resources: '',
+        recurrenceFreq: 'ONCE',
+        recurrenceDate: new Date(),
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
@@ -124,10 +127,10 @@ class Form extends Component {
             return;
         }
 
-        var latlon = this.state.geo.split(';');
-        var myLat = parseFloat(latlon[0]);
-        var myLon = parseFloat(latlon[1]);
-        this.setState({geo: {lat: myLat, lon: myLon}});
+        // var latlon = this.state.geo.split(';');
+        // var myLat = parseFloat(latlon[0]);
+        // var myLon = parseFloat(latlon[1]);
+        // this.setState({geo: {lat: myLat, lon: myLon}});
 
 
 
@@ -146,7 +149,7 @@ class Form extends Component {
             TZID: this.state.timezone,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
-            GEO: this.state.geo,
+            // GEO: this.state.geo,
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
@@ -286,17 +289,18 @@ class Form extends Component {
                                 showTimeSelect
                                 timeIntervals={15}
                                 timeCaption="Time"
-                                dateFormat="h:mm aa" />
+                                dateFormat="MMMM d, yyyy h:mm aa" />
                     <DatePicker selected={this.state.endDate}
                                 onChange={date => this.handleChange2(date)}
                                 showTimeSelect
                                 timeIntervals={15}
                                 timeCaption="Time"
-                                dateFormat="h:mm aa" />
+                                dateFormat="MMMM d, yyyy h:mm aa" />
                     <Timezone name='timezone' />
+                    <Recurrence name='recurrenceFreq' recur={this.state.recurrenceFreq} date={this.state.recurrenceDate} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <LocationInput name='location' />
-                    <GeoInput name='geo' />
+                    {/*<GeoInput name='geo' />*/}
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />
