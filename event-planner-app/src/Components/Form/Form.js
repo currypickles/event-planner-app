@@ -101,6 +101,50 @@ class Form extends Component {
         return parts.join('\r\n ');
     }
 
+    timeFormat(str, date) {
+        const time = {
+            seconds: '',
+            minutes: '',
+            hours: '',
+            num_hours: '',
+            month: '',
+            day: '',
+            year: ''
+        };
+        
+        console.log(date.toString());
+        str = date.toString().substr(4,20);
+        time.month = str.substr(0,3);
+        time.day = str.substr(4,2);
+        time.year = str.substr(7,4);
+
+        time.hours = str.substr(12, 2);
+        time.num_hours = parseInt(time.hours);
+        switch (this.state.timezone) {
+            case 'HST':
+                time.num_hours = time.num_hours + 10;
+                break;
+            case 'GMT-7':
+                time.num_hours = time.num_hours + 7;
+                break;
+            default:
+        }
+        if (time.hours < 0) {
+            time.hours += 24;
+        } else if (time.hours > 24) {
+            time.hours -= 24;
+        }
+        time.hours = time.num_hours.toString();
+        if (time.hours.length === 1) {
+            let zero = '0';
+            time.hours = zero + time.hours;
+        }
+
+        time.minutes = str.substr(15, 2);
+        time.seconds = str.substr(18, 2);
+        return time;
+    }
+
     validateForm(name, email, attendee) {
         const validEmailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
         let errors = {};
@@ -245,7 +289,9 @@ class Form extends Component {
             }
             if (el.match('RRULE')) {
                 if (newEvent[el] === 'ONCE') { continue; }
-                str = `${el}:FREQ=${newEvent[el]};UNTIL=${this.state.recurrenceDate}\r\n`;
+                str = newEvent[el].toString().substr(4,20);
+                const time = this.timeFormat(str, this.state.recurrenceDate);
+                str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                 event.push(this.foldLine(str));
                 continue;
             }
