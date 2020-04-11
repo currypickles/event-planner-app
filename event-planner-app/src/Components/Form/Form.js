@@ -290,7 +290,13 @@ class Form extends Component {
             if (el.match('RRULE')) {
                 if (newEvent[el] === 'ONCE') { continue; }
                 const time = this.timeFormat(str, this.state.recurrenceDate);
-                str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                if (newEvent[el] === 'MONTHLY') { 
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time.day}\r\n`;
+                } else if (newEvent[el] === 'YEARLY') {
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                } else {
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                }
                 event.push(this.foldLine(str));
                 continue;
             }

@@ -18,6 +18,9 @@ const recurrence = (props)  => {
                 <select name={props.name} defaultValue='ONCE' className='select-margin'>
                     <option value='ONCE'>Once</option>
                     <option value='DAILY'>Daily</option>
+                    <option value='WEEKLY'>Weekly</option>
+                    <option value='MONTHLY'>Monthly</option>
+                    <option value='YEARLY'>Yearly</option>
                 </select>
             </label>
             {datePicker}
