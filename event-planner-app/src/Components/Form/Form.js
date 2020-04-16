@@ -3,7 +3,7 @@ import TitleInput from '../Input/TitleInput';
 import Timezone from '../Input/Timezone';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
-import GeoInput from '../Input/GeoInput';
+// import GeoInput from '../Input/GeoInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
@@ -101,6 +101,9 @@ class Form extends Component {
         return parts.join('\r\n ');
     }
 
+    /************************************************************
+    * Time format
+    *************************************************************/
     timeFormat(str, date) {
         const time = {
             seconds: '',
@@ -119,7 +122,8 @@ class Form extends Component {
         time.year = str.substr(7,4);
 
         time.hours = str.substr(12, 2);
-        time.num_hours = parseInt(time.hours);
+
+        /* time.num_hours = parseInt(time.hours);
         switch (this.state.timezone) {
             case 'HST':
                 time.num_hours = time.num_hours + 10;
@@ -138,7 +142,7 @@ class Form extends Component {
         if (time.hours.length === 1) {
             let zero = '0';
             time.hours = zero + time.hours;
-        }
+        } */
 
         time.minutes = str.substr(15, 2);
         time.seconds = str.substr(18, 2);
