@@ -6,13 +6,17 @@ import LocationInput from '../Input/LocationInput';
 // import GeoInput from '../Input/GeoInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
+//<<<<<<< Updated upstream
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
 import Recurrence from '../Input/Recurrence';
 import './Form.css';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+//import "/react-datepicker/dist/react-datepicker.css";
+//=======
+
+//>>>>>>> Stashed changes
 
 class Form extends Component {
     state = {
