@@ -133,6 +133,8 @@ class Form extends Component {
 
         const newEvent = {
             BEGIN: 'VCALENDAR',
+            BEGIN3: 'VTIMEZONE',
+            END3: 'VTIMEZONE',
             VERSION: '2.0',
             PRODID: '-//Team Curry Pickles//Ical Event App//EN',
             BEGIN2: 'VEVENT',
@@ -193,7 +195,13 @@ class Form extends Component {
 
                 minutes = str.substr(15, 2);
                 seconds = str.substr(18, 2);
-                str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
+                console.log("Before 1: " + newEvent[el]);
+                console.log("Before 2: " + el);
+                //str = `DTSTART;TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`;
+                console.log("After 1: " + newEvent[el]);
+                console.log("After 2: " + el);
+                 str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
+                // str = `BEGIN:${newEvent[el]}\r\n`;
                 console.log(str);
                 event.push(str);
                 continue;
