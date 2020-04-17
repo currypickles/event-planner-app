@@ -325,7 +325,7 @@ class Form extends Component {
             }
             if (el.match('DTSTAMP')) {
                 const time = this.timeFormat(str, this.state.stamp);
-                str = `${el}: ${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                str = `${el}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                 console.log(str);
                 event.push(str);
                 continue;
