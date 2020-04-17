@@ -254,7 +254,7 @@ class Form extends Component {
                 seconds = str.substr(18, 2);
                 console.log("Before 1: " + newEvent[el]);
                 console.log("Before 2: " + el);
-                str = `${el};TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\r\n`;
+                str = `${el};TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}\r\n`;
                 // str = `DTSTART;TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`;
                 // str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
                 // str = `BEGIN:${newEvent[el]}\r\n`;
@@ -294,7 +294,7 @@ class Form extends Component {
 
                 minutes2 = str.substr(15, 2);
                 seconds2 = str.substr(18, 2);
-                str = `${el};TZID=${this.state.timezone}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\r\n`;
+                str = `${el};TZID=${this.state.timezone}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}\r\n`;
                 //str = `${el}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\n`
                 console.log(str);
                 event.push(str);
@@ -325,7 +325,7 @@ class Form extends Component {
             }
             if (el.match('DTSTAMP')) {
                 const time = this.timeFormat(str, this.state.stamp);
-                str = `${el}: ${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                str = `${el}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                 console.log(str);
                 event.push(str);
                 continue;
