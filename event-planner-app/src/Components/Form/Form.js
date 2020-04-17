@@ -286,13 +286,13 @@ class Form extends Component {
                                 showTimeSelect
                                 timeIntervals={15}
                                 timeCaption="Time"
-                                dateFormat="h:mm aa" />
+                                dateFormat="MMMM d, yyyy h:mm aa" />
                     <DatePicker selected={this.state.endDate}
                                 onChange={date => this.handleChange2(date)}
                                 showTimeSelect
                                 timeIntervals={15}
                                 timeCaption="Time"
-                                dateFormat="h:mm aa" />
+                                dateFormat="MMMM d, yyyy h:mm aa" />
                     <Timezone name='timezone' />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
                     <LocationInput name='location' />
