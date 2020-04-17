@@ -3,12 +3,13 @@ import TitleInput from '../Input/TitleInput';
 import Timezone from '../Input/Timezone';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
-import GeoInput from '../Input/GeoInput';
+// import GeoInput from '../Input/GeoInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
+import Recurrence from '../Input/Recurrence';
 import './Form.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -30,6 +31,8 @@ class Form extends Component {
         attendees: [],
         organizer: '',
         resources: '',
+        recurrenceFreq: 'ONCE',
+        recurrenceDate: new Date(),
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
@@ -48,6 +51,10 @@ class Form extends Component {
             endDate: date
         });
     };
+
+    handleRecurrenceDate = date => {
+        this.setState({ recurrenceDate: date });
+    }
 
     handleCharLimit = (event) => {
         this.setState({ [event.target.id]: event.target.value.length });
@@ -96,8 +103,8 @@ class Form extends Component {
     }
 
     /************************************************************
-     * Time format
-     *************************************************************/
+    * Time format
+    *************************************************************/
     timeFormat(str, date) {
         const time = {
             seconds: '',
@@ -108,7 +115,7 @@ class Form extends Component {
             day: '',
             year: ''
         };
-
+      
         console.log(date.toString());
         str = date.toString().substr(4,20);
         time.month = str.substr(0,3);
@@ -173,10 +180,10 @@ class Form extends Component {
             return;
         }
 
-        var latlon = this.state.geo.split(';');
-        var myLat = parseFloat(latlon[0]);
-        var myLon = parseFloat(latlon[1]);
-        this.setState({geo: {lat: myLat, lon: myLon}});
+        // var latlon = this.state.geo.split(';');
+        // var myLat = parseFloat(latlon[0]);
+        // var myLon = parseFloat(latlon[1]);
+        // this.setState({geo: {lat: myLat, lon: myLon}});
 
 
 
@@ -193,11 +200,12 @@ class Form extends Component {
             UID: Math.random().toString(), // Placeholder for now 
             DTSTART: this.state.startDate,
             DTEND: this.state.endDate,
+            RRULE: this.state.recurrenceFreq,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
-            GEO: this.state.geo,
+            // GEO: this.state.geo,
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
@@ -292,6 +300,19 @@ class Form extends Component {
                 event.push(str);
                 continue;
             }
+            if (el.match('RRULE')) {
+                if (newEvent[el] === 'ONCE') { continue; }
+                const time = this.timeFormat(str, this.state.recurrenceDate);
+                if (newEvent[el] === 'MONTHLY') { 
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time.day}\r\n`;
+                } else if (newEvent[el] === 'YEARLY') {
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                } else {
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                }
+                event.push(this.foldLine(str));
+                continue;
+            }
             if (el.match(/BEGIN[0-9]/)) {
                 str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
@@ -358,9 +379,13 @@ class Form extends Component {
                                 timeCaption="Time"
                                 dateFormat="MMMM d, yyyy h:mm aa" />
                     <Timezone name='timezone' />
-                    <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
+                    <Recurrence name='recurrenceFreq' 
+                                selected={this.state.recurrenceDate} 
+                                recur={this.state.recurrenceFreq} 
+                                date={date => this.handleRecurrenceDate(date)} />
+                    <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
                     <LocationInput name='location' />
-                    <GeoInput name='geo' />
+                    {/*<GeoInput name='geo' />*/}
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />
