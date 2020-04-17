@@ -19,7 +19,8 @@ class Form extends Component {
         titleInput: '',
         startDate: new Date(),
         endDate: new Date(),
-        timezone: 'HST',
+        stamp: new Date(),
+        timezone: 'Pacific/Honolulu',
         titleCharCounter: 0,
         description: '',
         location: '',
@@ -114,7 +115,7 @@ class Form extends Component {
             day: '',
             year: ''
         };
-        
+      
         console.log(date.toString());
         str = date.toString().substr(4,20);
         time.month = str.substr(0,3);
@@ -188,18 +189,20 @@ class Form extends Component {
 
         const newEvent = {
             BEGIN: 'VCALENDAR',
+            BEGIN3: 'VTIMEZONE',
+            TZID: this.state.timezone,
+            END3: 'VTIMEZONE',
             VERSION: '2.0',
             PRODID: '-//Team Curry Pickles//Ical Event App//EN',
             BEGIN2: 'VEVENT',
             PRIORITY: this.state.priority,
-            DTSTAMP: '2020026T230518Z',
+            DTSTAMP: this.state.stamp,
             UID: Math.random().toString(), // Placeholder for now 
             DTSTART: this.state.startDate,
             DTEND: this.state.endDate,
             RRULE: this.state.recurrenceFreq,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
-            TZID: this.state.timezone,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
             // GEO: this.state.geo,
@@ -227,29 +230,34 @@ class Form extends Component {
 
                 hours = str.substr(12, 2);
                 num_hours = parseInt(hours);
-                switch (this.state.timezone) {
-                    case 'HST':
-                        num_hours = num_hours + 10;
-                        break;
-                    case 'GMT-7':
-                        num_hours = num_hours + 7;
-                        break;
-                    default:
-                }
-                if (hours < 0) {
-                    hours += 24;
-                } else if (hours > 24) {
-                    hours -= 24;
-                }
-                hours = num_hours.toString();
-                if (hours.length === 1) {
-                    let zero = '0';
-                    hours = zero + hours;
-                }
+                // switch (this.state.timezone) {
+                //     case 'Pacific/Honolulu':
+                //         num_hours = num_hours + 10;
+                //         break;
+                //     case 'America/New_York':
+                //         num_hours = num_hours + 7;
+                //         break;
+                //     default:
+                // }
+                // if (hours < 0) {
+                //     hours += 24;
+                // } else if (hours > 24) {
+                //     hours -= 24;
+                // }
+                // hours = num_hours.toString();
+                // if (hours.length === 1) {
+                //     let zero = '0';
+                //     hours = zero + hours;
+                // }
 
                 minutes = str.substr(15, 2);
                 seconds = str.substr(18, 2);
-                str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
+                console.log("Before 1: " + newEvent[el]);
+                console.log("Before 2: " + el);
+                str = `${el};TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\r\n`;
+                // str = `DTSTART;TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`;
+                // str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
+                // str = `BEGIN:${newEvent[el]}\r\n`;
                 console.log(str);
                 event.push(str);
                 continue;
@@ -264,29 +272,30 @@ class Form extends Component {
 
                 hours2 = str.substr(12, 2);
                 num_hours2 = parseInt(hours2);
-                switch (this.state.timezone) {
-                    case 'HST':
-                        num_hours2 = num_hours2 + 10;
-                        break;
-                    case 'GMT-7':
-                        num_hours2 = num_hours2 + 7;
-                        break;
-                    default:
-                }
-                if (hours2 < 0) {
-                    hours2 += 24;
-                } else if (hours2 > 24) {
-                    hours2 -= 24;
-                }
-                hours2 = num_hours2.toString();
-                if (hours2.length === 1) {
-                    let zero = '0';
-                    hours2 = zero + hours2;
-                }
+                // switch (this.state.timezone) {
+                //     case 'Pacific/Honolulu':
+                //         num_hours2 = num_hours2 + 10;
+                //         break;
+                //     case 'America/New_York':
+                //         num_hours2 = num_hours2 + 7;
+                //         break;
+                //     default:
+                // }
+                // if (hours2 < 0) {
+                //     hours2 += 24;
+                // } else if (hours2 > 24) {
+                //     hours2 -= 24;
+                // }
+                // hours2 = num_hours2.toString();
+                // if (hours2.length === 1) {
+                //     let zero = '0';
+                //     hours2 = zero + hours2;
+                // }
 
                 minutes2 = str.substr(15, 2);
                 seconds2 = str.substr(18, 2);
-                str = `${el}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\n`
+                str = `${el};TZID=${this.state.timezone}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\r\n`;
+                //str = `${el}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\n`
                 console.log(str);
                 event.push(str);
                 continue;
@@ -311,6 +320,13 @@ class Form extends Component {
             }
             if (el.match(/END[0-9]/)) {
                 str = `END:${newEvent[el]}\r\n`;
+                event.push(str);
+                continue;
+            }
+            if (el.match('DTSTAMP')) {
+                const time = this.timeFormat(str, this.state.stamp);
+                str = `${el}: ${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                console.log(str);
                 event.push(str);
                 continue;
             }

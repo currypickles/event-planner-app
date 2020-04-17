@@ -5,8 +5,8 @@ const timezone = (props)  => (
     <div className='box-inline'>
         <label>Timezone:
             <select name={props.name} defaultValue='PUBLIC' className='select-margin'>
-                <option value='HST'>Hawaii State Time</option>
-                <option value='GMT-7'>Pacific Daylight Time</option>
+                <option value='Pacific/Honolulu'>Hawaii Standard Time</option>
+                <option value='America/New_York'>Eastern Time - New York</option>
 
             </select>
         </label>
