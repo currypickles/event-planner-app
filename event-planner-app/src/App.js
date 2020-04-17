@@ -20,9 +20,9 @@ class App extends Component {
       return (
 
         <div className='post'>
-        	<h1>Create A Calander Event</h1>
+        	<h1>Create A Calender Event</h1>
         	<div className='button'>
-          		<button onClick={this.togglePop}>Create An Event</button>
+          		<button id="text" onClick={this.togglePop}>Create An Event</button>
         	</div>
         	{this.state.seen ? <PopUp toggle={this.togglePop} /> : null}
         </div>
