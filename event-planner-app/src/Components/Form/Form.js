@@ -17,10 +17,14 @@ import "react-datepicker/dist/react-datepicker.css";
 class Form extends Component {
     state = {
         titleInput: '',
+        timezone: 'Pacific/Honolulu',
+        timezoneOffsetFrom: 0,
+        timezoneOffsetTo: -1000,
+        timezoneName: 'HST',
+        timezoneStart: '19700101T000000',
         startDate: new Date(),
         endDate: new Date(),
         stamp: new Date(),
-        timezone: 'Pacific/Honolulu',
         titleCharCounter: 0,
         description: '',
         location: '',
@@ -50,6 +54,42 @@ class Form extends Component {
         this.setState({
             endDate: date
         });
+    };
+
+    handleTimezone = (event) => {
+        console.log("I was here");
+        const timezoneOffsets = {
+            Hawaii: -1000,
+            New_York: { daylight: -400, standard: -500 }
+        };
+        const timezoneNames = {
+            Hawaii: 'HST',
+            New_York: { daylight: 'EDT', standard: 'EST' }
+        };
+        const timezoneStarts = {
+            Hawaii: '19700101T000000',
+            New_York: { daylight: '19700308T020000', standard: '19701101T020000' }
+        };
+
+        switch (event) {
+            case 'Pacific/Honolulu':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Hawaii,
+                    timezoneOffsetTo: timezoneOffsets.Hawaii,
+                    timezoneName : timezoneNames.Hawaii,
+                    timezoneStart: timezoneStarts.Hawaii
+                });
+                break;
+            case 'America/New_York':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.New_York.daylight,
+                    timezoneOffsetTo: timezoneOffsets.New_York.standard,
+                    timezoneName: timezoneNames.New_York.standard,
+                    timezoneStart: timezoneStarts.New_York.standard
+                });
+                break;
+            default:
+        }
     };
 
     handleRecurrenceDate = date => {
@@ -101,6 +141,7 @@ class Form extends Component {
         parts.push(line);
         return parts.join('\r\n ');
     }
+
 
     /************************************************************
     * Time format
@@ -191,6 +232,12 @@ class Form extends Component {
             BEGIN: 'VCALENDAR',
             BEGIN3: 'VTIMEZONE',
             TZID: this.state.timezone,
+            BEGIN4: 'STANDARD',
+            TZOFFSETFROM: this.state.timezoneOffsetFrom,
+            TZOFFSETTO: this.state.timezoneOffsetTo,
+            TZNAME: this.state.timezoneName,
+            ZONE_START: this.state.timezoneStart,
+            END4: 'STANDARD',
             END3: 'VTIMEZONE',
             VERSION: '2.0',
             PRODID: '-//Team Curry Pickles//Ical Event App//EN',
@@ -212,6 +259,7 @@ class Form extends Component {
             END2: 'VEVENT',
             END: 'VCALENDAR',
         };
+
 
         // Iterates over the newEvent object and puts each key and value into
         // an event array with the format - key:value as a string
@@ -318,6 +366,13 @@ class Form extends Component {
                 event.push(str);
                 continue;
             }
+
+            if (el.match('ZONE_START')) {
+                str = `DTSTART:${newEvent[el]}\r\n`;
+                event.push(str);
+                continue;
+            }
+
             if (el.match(/END[0-9]/)) {
                 str = `END:${newEvent[el]}\r\n`;
                 event.push(str);
@@ -378,7 +433,7 @@ class Form extends Component {
                                 timeIntervals={15}
                                 timeCaption="Time"
                                 dateFormat="MMMM d, yyyy h:mm aa" />
-                    <Timezone name='timezone' />
+                    <Timezone name='timezone' select={this.handleTimezone}/>
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
                                 recur={this.state.recurrenceFreq} 
