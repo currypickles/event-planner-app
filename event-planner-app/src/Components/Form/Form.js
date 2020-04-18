@@ -18,7 +18,7 @@ class Form extends Component {
     state = {
         titleInput: '',
         timezone: 'Pacific/Honolulu',
-        timezoneOffsetFrom: 0,
+        timezoneOffsetFrom: -1000,
         timezoneOffsetTo: -1000,
         timezoneName: 'HST',
         timezoneStart: '19700101T000000',
@@ -58,6 +58,7 @@ class Form extends Component {
 
     handleTimezone = (event) => {
         console.log("I was here");
+        const name = event.target.value;
         const timezoneOffsets = {
             Hawaii: -1000,
             New_York: { daylight: -400, standard: -500 }
@@ -71,7 +72,7 @@ class Form extends Component {
             New_York: { daylight: '19700308T020000', standard: '19701101T020000' }
         };
 
-        switch (event) {
+        switch (name) {
             case 'Pacific/Honolulu':
                 this.setState({
                     timezoneOffsetFrom: timezoneOffsets.Hawaii,
