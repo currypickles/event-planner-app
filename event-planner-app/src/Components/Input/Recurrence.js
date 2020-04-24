@@ -7,10 +7,12 @@ const recurrence = (props)  => {
         <label>Until:
             <DatePicker selected={props.selected}
                     onChange={props.date}
-                    showTimeSelect
-                    timeIntervals={15}
-                    timeCaption="Time"
-                    dateFormat="MMMM d, yyyy h:mm aa" />
+                    dateFormat="MMMM d, yyyy"
+                    minDate={props.startDate}
+                    peekNextMonth
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select" />
         </label> : '';
     return ( 
         <div>
@@ -24,6 +26,9 @@ const recurrence = (props)  => {
                 </select>
             </label>
             {datePicker}
+            <label>
+                <div style={{fontSize: '10px', color: 'red'}}>{props.errMsg}</div>
+            </label>
         </div>
     );
 };

@@ -36,7 +36,8 @@ class Form extends Component {
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
-            attendeeErrMsg: ''
+            attendeeErrMsg: '',
+            recurErrMsg: ''
         }
     };
 
@@ -150,7 +151,7 @@ class Form extends Component {
         return time;
     }
 
-    validateForm(name, email, attendee) {
+    validateForm(name, email, attendee, startDate, recurrenceDate) {
         const validEmailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
         let errors = {};
         if (name.length === 0 || (name.length >= 0 && name.trim() === '')) {
@@ -167,14 +168,17 @@ class Form extends Component {
                 errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
             }
         });
+        if (recurrenceDate < startDate) {
+            errors = { ...errors, recurErrMsg: 'Can\'t repeat before start date!' }
+        }
         return errors;
     }
 
     downloadTxtFile = (e) => {
         e.preventDefault();
 
-        const errors = this.validateForm(this.state.titleInput, this.state.organizer, this.state.attendees.map(x => x.mailto));
-        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg') || errors.hasOwnProperty('attendeeErrMsg')) {
+        const errors = this.validateForm(this.state.titleInput, this.state.organizer, this.state.attendees.map(x => x.mailto), this.state.startDate, this.state.recurrenceDate);
+        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg') || errors.hasOwnProperty('attendeeErrMsg') || errors.hasOwnProperty('recurErrMsg')) {
             this.setState({ errors });
             console.log(errors)
             return;
@@ -304,11 +308,11 @@ class Form extends Component {
                 if (newEvent[el] === 'ONCE') { continue; }
                 const time = this.timeFormat(str, this.state.recurrenceDate);
                 if (newEvent[el] === 'MONTHLY') { 
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time.day}\r\n`;
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTHDAY=${time.day}\r\n`;
                 } else if (newEvent[el] === 'YEARLY') {
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
                 } else {
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z\r\n`;
                 }
                 event.push(this.foldLine(str));
                 continue;
@@ -382,7 +386,9 @@ class Form extends Component {
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
                                 recur={this.state.recurrenceFreq} 
-                                date={date => this.handleRecurrenceDate(date)} />
+                                date={date => this.handleRecurrenceDate(date)}
+                                startDate={this.state.startDate}
+                                errMsg={this.state.errors.recurErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
                     <LocationInput name='location' />
                     {/*<GeoInput name='geo' />*/}
