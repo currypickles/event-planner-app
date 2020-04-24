@@ -26,6 +26,9 @@ const recurrence = (props)  => {
                 </select>
             </label>
             {datePicker}
+            <label>
+                <div style={{fontSize: '10px', color: 'red'}}>{props.errMsg}</div>
+            </label>
         </div>
     );
 };
