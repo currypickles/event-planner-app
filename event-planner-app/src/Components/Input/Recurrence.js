@@ -17,7 +17,7 @@ const recurrence = (props)  => {
     return ( 
         <div>
             <label>Repeat:
-                <select name={props.name} defaultValue='ONCE' className='select-margin'>
+                <select name={props.name} onChange={props.freq} defaultValue='ONCE' className='select-margin'>
                     <option value='ONCE'>Once</option>
                     <option value='DAILY'>Daily</option>
                     <option value='WEEKLY'>Weekly</option>
@@ -25,7 +25,9 @@ const recurrence = (props)  => {
                     <option value='YEARLY'>Yearly</option>
                 </select>
             </label>
+            <div>
             {datePicker}
+            </div>
             <label>
                 <div style={{fontSize: '10px', color: 'red'}}>{props.errMsg}</div>
             </label>
