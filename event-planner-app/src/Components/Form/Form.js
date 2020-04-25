@@ -32,7 +32,7 @@ class Form extends Component {
         organizer: '',
         resources: '',
         recurrenceFreq: 'ONCE',
-        recurrenceDate: new Date(),
+        recurrenceDate: '',
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
@@ -53,9 +53,9 @@ class Form extends Component {
         });
     };
 
-    handleRecurrenceDate = date => {
-        this.setState({ recurrenceDate: date });
-    }
+    handleRecurrenceDate = date => { this.setState({ recurrenceDate: date }); };
+
+    handleRecurrenceFreq = () => { this.setState({ recurrenceDate: '' }); };
 
     handleCharLimit = (event) => {
         this.setState({ [event.target.id]: event.target.value.length });
@@ -168,7 +168,7 @@ class Form extends Component {
                 errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
             }
         });
-        if (recurrenceDate < startDate) {
+        if ((recurrenceDate < startDate) && recurrenceDate !== '') {
             errors = { ...errors, recurErrMsg: 'Can\'t repeat before start date!' }
         }
         return errors;
@@ -387,6 +387,7 @@ class Form extends Component {
                                 selected={this.state.recurrenceDate} 
                                 recur={this.state.recurrenceFreq} 
                                 date={date => this.handleRecurrenceDate(date)}
+                                freq={this.handleRecurrenceFreq}
                                 startDate={this.state.startDate}
                                 errMsg={this.state.errors.recurErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
