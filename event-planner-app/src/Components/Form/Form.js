@@ -153,6 +153,7 @@ class Form extends Component {
 
     validateForm(name, email, attendee, startDate, recurrenceDate) {
         const validEmailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
+        const recurStartDate = new Date(startDate); // This is important, need to create a new date ref
         let errors = {};
         if (name.length === 0 || (name.length >= 0 && name.trim() === '')) {
             errors = { ...errors, titleErrMsg: 'Title is required!' };
@@ -168,7 +169,7 @@ class Form extends Component {
                 errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
             }
         });
-        if ((recurrenceDate < startDate) && recurrenceDate !== '') {
+        if ((recurrenceDate < recurStartDate.setHours(0,0,0,0)) && recurrenceDate !== '') {
             errors = { ...errors, recurErrMsg: 'Can\'t repeat before start date!' }
         }
         return errors;
