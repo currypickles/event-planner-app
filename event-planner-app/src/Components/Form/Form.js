@@ -33,6 +33,7 @@ class Form extends Component {
         resources: '',
         recurrenceFreq: 'ONCE',
         recurrenceDate: '',
+        recurrIsChecked: false,
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
@@ -53,9 +54,14 @@ class Form extends Component {
         });
     };
 
+    handleRecurrenceChkBx = () => { 
+        this.setState({ recurrIsChecked: !this.state.recurrIsChecked }); 
+        if(this.state.recurrIsChecked === false) { this.setState({ recurrenceDate: '' }); }
+    };
+
     handleRecurrenceDate = date => { this.setState({ recurrenceDate: date }); };
 
-    handleRecurrenceFreq = () => { this.setState({ recurrenceDate: '' }); };
+    handleRecurrenceFreq = () => { this.setState({ recurrenceDate: '', recurrIsChecked: false }); };
 
     handleCharLimit = (event) => {
         this.setState({ [event.target.id]: event.target.value.length });
@@ -169,8 +175,11 @@ class Form extends Component {
                 errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
             }
         });
-        if ((recurrenceDate < recurStartDate.setHours(0,0,0,0)) && recurrenceDate !== '') {
+        if ((recurrenceDate < recurStartDate.setHours(0,0,0,0)) && recurrenceDate !== '' && this.state.recurrIsChecked) {
             errors = { ...errors, recurErrMsg: 'Can\'t repeat before start date!' }
+        }
+        if (this.state.recurrIsChecked && recurrenceDate === '') {
+            errors = { ...errors, recurErrMsg: 'Enter a date to repeat until!' }
         }
         return errors;
     }
@@ -309,11 +318,23 @@ class Form extends Component {
                 if (newEvent[el] === 'ONCE') { continue; }
                 const time = this.timeFormat(str, this.state.recurrenceDate);
                 if (newEvent[el] === 'MONTHLY') { 
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTHDAY=${time.day}\r\n`;
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTHDAY=${time.day}\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
+                    }
                 } else if (newEvent[el] === 'YEARLY') {
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]};BYMONTH=${this.state.startDate.getMonth()+1};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
+                    }
                 } else {
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z\r\n`;
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]}\r\n`;
+                    }
                 }
                 event.push(this.foldLine(str));
                 continue;
@@ -390,6 +411,8 @@ class Form extends Component {
                                 date={date => this.handleRecurrenceDate(date)}
                                 freq={this.handleRecurrenceFreq}
                                 startDate={this.state.startDate}
+                                checked={this.handleRecurrenceChkBx}
+                                isChecked={this.state.recurrIsChecked}
                                 errMsg={this.state.errors.recurErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
                     <LocationInput name='location' />

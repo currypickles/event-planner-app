@@ -3,17 +3,26 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const recurrence = (props)  => {
-    const datePicker = props.recur !== 'ONCE' ? 
-        <label>Until:
-            <DatePicker selected={props.selected}
-                    onChange={props.date}
-                    dateFormat="MMMM d, yyyy"
-                    minDate={props.startDate}
-                    peekNextMonth
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select" />
-        </label> : '';
+    const displayCheck = props.recur !== 'ONCE' ?
+        <div>
+            <label style={{display: 'inline'}}>End Repeat Date
+                <input type='checkbox' onChange={props.checked} checked={props.isChecked} style={{width: '10%', display: 'inline'}} />
+            </label>        
+        </div> : '';
+
+    const datePicker = props.isChecked && props.recur !== 'ONCE' ? 
+        <div>
+            <label style={{display: 'block'}}>Until:
+                <DatePicker selected={props.selected}
+                        onChange={props.date}
+                        dateFormat="MMMM d, yyyy" 
+                        minDate={props.startDate}
+                        peekNextMonth
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select" />
+            </label>
+        </div> : '';
     return ( 
         <div>
             <label>Repeat:
@@ -25,9 +34,8 @@ const recurrence = (props)  => {
                     <option value='YEARLY'>Yearly</option>
                 </select>
             </label>
-            <div>
+            {displayCheck}
             {datePicker}
-            </div>
             <label>
                 <div style={{fontSize: '10px', color: 'red'}}>{props.errMsg}</div>
             </label>
