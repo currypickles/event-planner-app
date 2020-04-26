@@ -174,7 +174,7 @@ class Form extends Component {
                 errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
             }
         });
-        if ((recurrenceDate < recurStartDate.setHours(0,0,0,0)) && recurrenceDate !== '') {
+        if ((recurrenceDate < recurStartDate.setHours(0,0,0,0)) && recurrenceDate !== '' && this.state.recurrIsChecked) {
             errors = { ...errors, recurErrMsg: 'Can\'t repeat before start date!' }
         }
         if (this.state.recurrIsChecked && recurrenceDate === '') {
