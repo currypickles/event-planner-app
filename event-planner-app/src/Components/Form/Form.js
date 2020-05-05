@@ -16,14 +16,17 @@ import "react-datepicker/dist/react-datepicker.css";
 class Form extends Component {
     state = {
         titleInput: '',
+        timezone: 'Pacific/Honolulu',
+        timezoneOffsetFrom: -1000,
+        timezoneOffsetTo: -1000,
+        timezoneName: 'HST',
+        timezoneStart: '19700101T000000',
         startDate: new Date(),
         endDate: new Date(),
         stamp: new Date(),
-        timezone: 'Pacific/Honolulu',
         titleCharCounter: 0,
         description: '',
         location: '',
-        geo: { lat: 0, lon: 0 },
         desCharCounter: 0,
         classification: 'PUBLIC',
         priority: '0',
@@ -51,6 +54,43 @@ class Form extends Component {
         this.setState({
             endDate: date
         });
+    };
+
+    handleTimezone = (event) => {
+        console.log("I was here");
+        const name = event.target.value;
+        const timezoneOffsets = {
+            Hawaii: -1000,
+            New_York: { daylight: '-0400', standard: '-0500' }
+        };
+        const timezoneNames = {
+            Hawaii: 'HST',
+            New_York: { daylight: 'EDT', standard: 'EST' }
+        };
+        const timezoneStarts = {
+            Hawaii: '19700101T000000',
+            New_York: { daylight: '19700308T020000', standard: '19701101T020000' }
+        };
+
+        switch (name) {
+            case 'Pacific/Honolulu':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Hawaii,
+                    timezoneOffsetTo: timezoneOffsets.Hawaii,
+                    timezoneName : timezoneNames.Hawaii,
+                    timezoneStart: timezoneStarts.Hawaii
+                });
+                break;
+            case 'America/New_York':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.New_York.daylight,
+                    timezoneOffsetTo: timezoneOffsets.New_York.standard,
+                    timezoneName: timezoneNames.New_York.standard,
+                    timezoneStart: timezoneStarts.New_York.standard
+                });
+                break;
+            default:
+        }
     };
 
     handleRecurrenceChkBx = () => { 
@@ -169,6 +209,12 @@ class Form extends Component {
             BEGIN: 'VCALENDAR',
             BEGIN3: 'VTIMEZONE',
             TZID: this.state.timezone,
+            BEGIN4: 'STANDARD',
+            TZOFFSETFROM: this.state.timezoneOffsetFrom,
+            TZOFFSETTO: this.state.timezoneOffsetTo,
+            TZNAME: this.state.timezoneName,
+            ZONE_START: this.state.timezoneStart,
+            END4: 'STANDARD',
             END3: 'VTIMEZONE',
             VERSION: '2.0',
             PRODID: '-//Team Curry Pickles//Ical Event App//EN',
@@ -239,6 +285,13 @@ class Form extends Component {
                 event.push(str);
                 continue;
             }
+
+            if (el.match('ZONE_START')) {
+                str = `DTSTART:${newEvent[el]}\r\n`;
+                event.push(str);
+                continue;
+            }
+
             if (el.match(/END[0-9]/)) {
                 str = `END:${newEvent[el]}\r\n`;
                 event.push(str);
@@ -247,7 +300,6 @@ class Form extends Component {
             if (el.match('DTSTAMP')) {
                 const time = this.timeFormat(str, this.state.stamp);
                 str = `${el}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
-                console.log(str);
                 event.push(str);
                 continue;
             }
@@ -299,7 +351,7 @@ class Form extends Component {
                                 timeIntervals={15}
                                 timeCaption="Time"
                                 dateFormat="MMMM d, yyyy h:mm aa" />
-                    <Timezone name='timezone' />
+                    <Timezone name='timezone' select={this.handleTimezone} />
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
                                 recur={this.state.recurrenceFreq} 
