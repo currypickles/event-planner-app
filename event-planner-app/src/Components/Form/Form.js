@@ -9,9 +9,8 @@ import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
 import Recurrence from '../Input/Recurrence';
+import DateTime from '../DateTime/DateTime';
 import './Form.css';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 class Form extends Component {
     state = {
@@ -44,13 +43,13 @@ class Form extends Component {
         }
     };
 
-    handleChange = date => {
+    handleStartDate = date => {
         this.setState({
             startDate: date
         });
     };
 
-    handleChange2 = date => {
+    handleEndDate = date => {
         this.setState({
             endDate: date
         });
@@ -339,18 +338,10 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
-                    <DatePicker selected={this.state.startDate}
-                                onChange={date => this.handleChange(date)}
-                                showTimeSelect
-                                timeIntervals={15}
-                                timeCaption="Time"
-                                dateFormat="MMMM d, yyyy h:mm aa" />
-                    <DatePicker selected={this.state.endDate}
-                                onChange={date => this.handleChange2(date)}
-                                showTimeSelect
-                                timeIntervals={15}
-                                timeCaption="Time"
-                                dateFormat="MMMM d, yyyy h:mm aa" />
+                    <DateTime selectStart={this.state.startDate} 
+                              selectEnd={this.state.endDate} 
+                              startDate={date => this.handleStartDate(date)} 
+                              endDate={date => this.handleEndDate(date)} />
                     <Timezone name='timezone' select={this.handleTimezone} />
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
