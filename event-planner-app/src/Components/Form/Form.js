@@ -45,7 +45,8 @@ class Form extends Component {
 
     handleStartDate = date => {
         this.setState({
-            startDate: date
+            startDate: date,
+            endDate: date
         });
     };
 
@@ -53,6 +54,7 @@ class Form extends Component {
         this.setState({
             endDate: date
         });
+        if (this.state.startDate === '') { this.setState({ startDate: date }); };
     };
 
     handleTimezone = (event) => {
@@ -156,7 +158,6 @@ class Form extends Component {
             year: ''
         };
       
-        console.log(date.toString());
         str = date.toString().substr(4,20);
         time.month = str.substr(0,3);
         time.day = str.substr(4,2);
@@ -243,12 +244,14 @@ class Form extends Component {
             const months = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07',
                 Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
             if(el.match('DTSTART')) {
+                if (this.state.startDate === null || this.state.startDate < this.state.stamp) { return; } // For validation check DateTime Component
                 const time = this.timeFormat(str, this.state.startDate);
                 str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
                 event.push(str);
                 continue;
             }
             if(el.match('DTEND')) {
+                if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
                 const time = this.timeFormat(str, this.state.endDate);
                 str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
                 event.push(str);
@@ -279,6 +282,7 @@ class Form extends Component {
                 event.push(this.foldLine(str));
                 continue;
             }
+            
             if (el.match(/BEGIN[0-9]/)) {
                 str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
