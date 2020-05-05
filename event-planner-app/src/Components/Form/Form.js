@@ -3,7 +3,6 @@ import TitleInput from '../Input/TitleInput';
 import Timezone from '../Input/Timezone';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
-// import GeoInput from '../Input/GeoInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
@@ -67,11 +66,6 @@ class Form extends Component {
         this.setState({ [event.target.id]: event.target.value.length });
     }
 
-    // handleGeoFormat = (event) => {
-    //     var latlon = event.target.value.split(';');
-    //     this.setState({geo: {lat: latlon[0], lon:latlon[1]}});
-    // }
-
     handleNumAttendees = (event) => {
         this.setState(prevState => ({
             attendees: [...prevState.attendees, {
@@ -128,30 +122,7 @@ class Form extends Component {
         time.month = str.substr(0,3);
         time.day = str.substr(4,2);
         time.year = str.substr(7,4);
-
         time.hours = str.substr(12, 2);
-
-        /* time.num_hours = parseInt(time.hours);
-        switch (this.state.timezone) {
-            case 'HST':
-                time.num_hours = time.num_hours + 10;
-                break;
-            case 'GMT-7':
-                time.num_hours = time.num_hours + 7;
-                break;
-            default:
-        }
-        if (time.hours < 0) {
-            time.hours += 24;
-        } else if (time.hours > 24) {
-            time.hours -= 24;
-        }
-        time.hours = time.num_hours.toString();
-        if (time.hours.length === 1) {
-            let zero = '0';
-            time.hours = zero + time.hours;
-        } */
-
         time.minutes = str.substr(15, 2);
         time.seconds = str.substr(18, 2);
         return time;
@@ -194,13 +165,6 @@ class Form extends Component {
             return;
         }
 
-        // var latlon = this.state.geo.split(';');
-        // var myLat = parseFloat(latlon[0]);
-        // var myLon = parseFloat(latlon[1]);
-        // this.setState({geo: {lat: myLat, lon: myLon}});
-
-
-
         const newEvent = {
             BEGIN: 'VCALENDAR',
             BEGIN3: 'VTIMEZONE',
@@ -219,7 +183,6 @@ class Form extends Component {
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
-            // GEO: this.state.geo,
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
@@ -235,82 +198,14 @@ class Form extends Component {
             const months = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07',
                 Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
             if(el.match('DTSTART')) {
-                let seconds, minutes, hours, num_hours, month, day, year;
-                console.log(newEvent[el].toString());
-                str = newEvent[el].toString().substr(4,20);
-                month = str.substr(0,3);
-                day = str.substr(4,2);
-                year = str.substr(7,4);
-
-                hours = str.substr(12, 2);
-                num_hours = parseInt(hours);
-                // switch (this.state.timezone) {
-                //     case 'Pacific/Honolulu':
-                //         num_hours = num_hours + 10;
-                //         break;
-                //     case 'America/New_York':
-                //         num_hours = num_hours + 7;
-                //         break;
-                //     default:
-                // }
-                // if (hours < 0) {
-                //     hours += 24;
-                // } else if (hours > 24) {
-                //     hours -= 24;
-                // }
-                // hours = num_hours.toString();
-                // if (hours.length === 1) {
-                //     let zero = '0';
-                //     hours = zero + hours;
-                // }
-
-                minutes = str.substr(15, 2);
-                seconds = str.substr(18, 2);
-                console.log("Before 1: " + newEvent[el]);
-                console.log("Before 2: " + el);
-                str = `${el};TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\r\n`;
-                // str = `DTSTART;TZID=${this.state.timezone}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`;
-                // str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
-                // str = `BEGIN:${newEvent[el]}\r\n`;
-                console.log(str);
+                const time = this.timeFormat(str, this.state.startDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
                 event.push(str);
                 continue;
             }
             if(el.match('DTEND')) {
-                let seconds2, minutes2, hours2, num_hours2, month2, day2, year2;
-                console.log(newEvent[el].toString());
-                str = newEvent[el].toString().substr(4,20);
-                month2 = str.substr(0,3);
-                day2 = str.substr(4,2);
-                year2 = str.substr(7,4);
-
-                hours2 = str.substr(12, 2);
-                num_hours2 = parseInt(hours2);
-                // switch (this.state.timezone) {
-                //     case 'Pacific/Honolulu':
-                //         num_hours2 = num_hours2 + 10;
-                //         break;
-                //     case 'America/New_York':
-                //         num_hours2 = num_hours2 + 7;
-                //         break;
-                //     default:
-                // }
-                // if (hours2 < 0) {
-                //     hours2 += 24;
-                // } else if (hours2 > 24) {
-                //     hours2 -= 24;
-                // }
-                // hours2 = num_hours2.toString();
-                // if (hours2.length === 1) {
-                //     let zero = '0';
-                //     hours2 = zero + hours2;
-                // }
-
-                minutes2 = str.substr(15, 2);
-                seconds2 = str.substr(18, 2);
-                str = `${el};TZID=${this.state.timezone}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\r\n`;
-                //str = `${el}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\n`
-                console.log(str);
+                const time = this.timeFormat(str, this.state.endDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
                 event.push(str);
                 continue;
             }
@@ -416,7 +311,6 @@ class Form extends Component {
                                 errMsg={this.state.errors.recurErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
                     <LocationInput name='location' />
-                    {/*<GeoInput name='geo' />*/}
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />
