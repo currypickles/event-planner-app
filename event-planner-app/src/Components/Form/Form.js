@@ -4,6 +4,7 @@ import Timezone from '../Input/Timezone';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
 // import GeoInput from '../Input/GeoInput';
+import Dates from '../Input/Dates';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
@@ -15,6 +16,58 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 class Form extends Component {
+    // constructor() {
+    //     super();
+    //     this.parentChange = this.parentChange.bind(this);
+    //     this.parentChange2 = this.parentChange2.bind(this);
+    //     this.state = {
+    //         titleInput: '',
+    //             timezone: 'Pacific/Honolulu',
+    //             timezoneOffsetFrom: -1000,
+    //             timezoneOffsetTo: -1000,
+    //             timezoneName: 'HST',
+    //             timezoneStart: '19700101T000000',
+    //             startDate: new Date(),
+    //             endDate: new Date(),
+    //             stamp: new Date(),
+    //             titleCharCounter: 0,
+    //             description: '',
+    //             location: '',
+    //             geo: { lat: 0, lon: 0 },
+    //             desCharCounter: 0,
+    //             classification: 'PUBLIC',
+    //             priority: '0',
+    //             attendees: [],
+    //             organizer: '',
+    //             resources: '',
+    //             recurrenceFreq: 'ONCE',
+    //             recurrenceDate: new Date(),
+    //             errors: {
+    //                 titleErrMsg: '',
+    //                 emailErrMsg: '',
+    //                 attendeeErrMsg: ''
+    //             }
+    //     };
+    // }
+    //
+    // parentChange(startDate) {
+    //     if (startDate > this.state.endDate) {
+    //         this.setState({endDate: startDate})
+    //     }
+    //     this.setState({
+    //         startDate: startDate
+    //     });
+    // };
+    //
+    // parentChange2 (startDate){
+    //     if (startDate < this.state.startDate) {
+    //         startDate = this.state.startDate
+    //     }
+    //     this.setState({
+    //         endDate: startDate
+    //     });
+    // };
+
     state = {
         titleInput: '',
         timezone: 'Pacific/Honolulu',
@@ -24,6 +77,11 @@ class Form extends Component {
         timezoneStart: '19700101T000000',
         startDate: new Date(),
         endDate: new Date(),
+        minStart: new Date(),
+        
+        maxStart: {},
+        minEnd: new Date(),
+        maxEnd: '',
         stamp: new Date(),
         titleCharCounter: 0,
         description: '',
@@ -45,16 +103,125 @@ class Form extends Component {
     };
 
     handleChange = date => {
+        console.log("Changing start date");
+        if (date > this.state.endDate) {
+            this.setState({endDate: date})
+        }
         this.setState({
             startDate: date
         });
+
+
+        let return_val = this.state.startDate;
+
+        let now = new Date();
+        let today = now.getDay();
+        let start_day = this.state.startDate.getDay();
+
+
+        if (start_day > today) {
+
+            return_val.setHours(0);
+            return_val.setMinutes(0);
+
+            this.setState({
+                minStart: return_val
+            });
+        }
+        else {
+            this.setState({
+                minStart: now
+            });
+        }
+
     };
 
     handleChange2 = date => {
+        if (date < this.state.startDate) {
+            date = this.state.startDate
+        }
         this.setState({
             endDate: date
         });
-    };
+
+
+        let return_val = this.state.startDate;
+
+        let start_day = this.state.startDate.getDay();
+        let end_day = this.state.endDate.getDay();
+
+        if (end_day > start_day) {
+
+            return_val.setHours(0);
+            return_val.setMinutes(0);
+
+            this.setState({
+                minEnd: return_val
+            });
+        }
+        else {
+                this.setState({
+                    minStart: this.state.startDate
+                });
+            }
+        };
+
+    // handleTiming = () => {
+    //     console.log("hello");
+    //
+    //     let return_val = this.state.startDate;
+    //
+    //     let now = new Date();
+    //     let today = now.getDay();
+    //     let start_day = this.state.startDate.getDay();
+    //
+    //
+    //     if (start_day > today) {
+    //         return_val.setHours(0);
+    //         return_val.setMinutes(0);
+    //     }
+    //
+    //     console.log("Starting min: "+return_val);
+    //     return return_val
+    // };
+
+    // handleTiming2 = () => {
+    //     console.log("hello2");
+    //     let return_val = this.state.startDate;
+    //
+    //     let start_day = this.state.startDate.getDay();
+    //     let end_day = this.state.endDate.getDay();
+    //
+    //     if (end_day > start_day) {
+    //         return_val.setHours(0);
+    //         return_val.setMinutes(0);
+    //     }
+    //
+    //     console.log("Ending min: "+return_val);
+    //     return return_val
+    // };
+
+    // handleMax = () => {
+    //     let d = this.state.startDate;
+    //     d.setHours(23);
+    //     d.setMinutes(59);
+    //
+    //     console.log("Starting max: "+ d);
+    //
+    //     return d;
+    // };
+    //
+    // handleMax2 = () => {
+    //     let d = this.state.endDate;
+    //     d.setHours(23);
+    //     d.setMinutes(59);
+    //
+    //     console.log("Ending max: " + d);
+    //
+    //     return d;
+    // };
+
+
 
     handleTimezone = (event) => {
         console.log("I was here");
@@ -421,18 +588,41 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
-                    <DatePicker selected={this.state.startDate}
-                                onChange={date => this.handleChange(date)}
-                                showTimeSelect
-                                timeIntervals={15}
-                                timeCaption="Time"
-                                dateFormat="MMMM d, yyyy h:mm aa" />
-                    <DatePicker selected={this.state.endDate}
-                                onChange={date => this.handleChange2(date)}
-                                showTimeSelect
-                                timeIntervals={15}
-                                timeCaption="Time"
-                                dateFormat="MMMM d, yyyy h:mm aa" />
+                    {/*<Dates methodfromparent={this.parentChange}*/}
+                    {/*       minDay={new Date()}*/}
+                    {/*       minTiming={new Date()}*/}
+                    {/*/>*/}
+                    {/*<Dates methodfromparent={this.parentChange2}*/}
+                    {/*       minDay={this.state.startDate}*/}
+                    {/*       minTiming={this.state.startDate}*/}
+                    {/*/>*/}
+                    {/*<DatePicker selected={this.state.startDate}*/}
+                    {/*            onChange={date => this.handleChange(date)}*/}
+                    {/*            minDate = {new Date()}*/}
+                    {/*            showTimeSelect*/}
+                    {/*            timeIntervals={15}*/}
+                    {/*            timeCaption="Time"*/}
+                    {/*            dateFormat="MMMM d, yyyy h:mm aa" />*/}
+                    {/*<DatePicker selected={this.state.endDate}*/}
+                    {/*            onChange={date => this.handleChange2(date)}*/}
+                    {/*            minDate = {this.state.startDate}*/}
+                    {/*            showTimeSelect*/}
+                    {/*            timeIntervals={15}*/}
+                    {/*            timeCaption="Time"*/}
+                    {/*            dateFormat="MMMM d, yyyy h:mm aa" />*/}
+                    <Dates selected={this.state.startDate}
+                           date={date => this.handleChange(date)}
+                           minDay={new Date()}
+                           minTiming={this.state.minStart}
+                           maxTiming={this.state.maxStart}
+                           //minTiming={new Date()}
+                           />
+                    <Dates selected={this.state.endDate}
+                           date={date => this.handleChange2(date)}
+                           minDay={this.state.startDate}
+                           minTiming={this.state.minEnd}
+                           maxTiming={this.state.maxEnd}
+                           />
                     <Timezone name='timezone' select={this.handleTimezone}/>
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
