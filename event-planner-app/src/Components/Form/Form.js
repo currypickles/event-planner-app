@@ -282,7 +282,7 @@ class Form extends Component {
                 event.push(this.foldLine(str));
                 continue;
             }
-            
+
             if (el.match(/BEGIN[0-9]/)) {
                 str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
@@ -345,7 +345,8 @@ class Form extends Component {
                     <DateTime selectStart={this.state.startDate} 
                               selectEnd={this.state.endDate} 
                               startDate={date => this.handleStartDate(date)} 
-                              endDate={date => this.handleEndDate(date)} />
+                              endDate={date => this.handleEndDate(date)}
+                              stamp={this.state.stamp} />
                     <Timezone name='timezone' select={this.handleTimezone} />
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
