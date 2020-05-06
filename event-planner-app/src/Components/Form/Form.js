@@ -144,7 +144,9 @@ class Form extends Component {
         if(this.state.recurrIsChecked === false) { this.setState({ recurrenceDate: '' }); }
     };
 
-    handleRecurrenceDate = date => { this.setState({ recurrenceDate: date }); };
+    handleRecurrenceDate = date => {
+        this.setState({ recurrenceDate: date });
+    };
 
     handleRecurrenceFreq = () => { this.setState({ recurrenceDate: '', recurrIsChecked: false }); };
 
@@ -268,8 +270,8 @@ class Form extends Component {
             DTSTAMP: this.state.stamp,
             UID: Math.random().toString() + '@teamcurrypickles', // Placeholder for now
             DTSTART: this.state.startDate,
-            DTEND: this.state.endDate,
             RRULE: this.state.recurrenceFreq,
+            DTEND: this.state.endDate,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
@@ -295,16 +297,26 @@ class Form extends Component {
                 event.push(str);
                 continue;
             }
-            if(el.match('DTEND')) {
-                if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
-                const time = this.timeFormat(str, this.state.endDate);
-                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
-                event.push(str);
-                continue;
-            }
+            // if(el.match('DTEND')) {
+            //     if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
+            //     const time = this.timeFormat(str, this.state.endDate);
+            //     str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
+            //     event.push(str);
+            //     continue;
+            // }
             if (el.match('RRULE')) {
+
                 if (newEvent[el] === 'ONCE') { continue; }
-                const time = this.timeFormat(str, this.state.recurrenceDate);
+                this.state.recurrenceDate.setHours(this.state.startDate.getHours());
+                this.state.recurrenceDate.setMinutes(this.state.startDate.getMinutes());
+                this.state.recurrenceDate.setSeconds(this.state.startDate.getSeconds());
+                const my_date = this.state.recurrenceDate
+                console.log(my_date)
+                my_date.setHours(my_date.getHours()+10);
+                console.log(my_date)
+
+                const time = this.timeFormat(str, my_date);
+                console.log(time);
                 if (newEvent[el] === 'MONTHLY') { 
                     if (this.state.recurrIsChecked) {
                         str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time.day}\r\n`;
@@ -319,12 +331,20 @@ class Form extends Component {
                     }
                 } else {
                     if (this.state.recurrIsChecked) {
-                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z\r\n`;
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                     } else {
                         str = `${el}:FREQ=${newEvent[el]}\r\n`;
                     }
                 }
                 event.push(this.foldLine(str));
+                continue;
+            }
+
+            if(el.match('DTEND')) {
+                if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
+                const time = this.timeFormat(str, this.state.endDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
+                event.push(str);
                 continue;
             }
 
