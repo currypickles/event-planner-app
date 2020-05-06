@@ -266,7 +266,7 @@ class Form extends Component {
             BEGIN2: 'VEVENT',
             PRIORITY: this.state.priority,
             DTSTAMP: this.state.stamp,
-            UID: Math.random().toString(), // Placeholder for now 
+            UID: Math.random().toString() + '@teamcurrypickles', // Placeholder for now
             DTSTART: this.state.startDate,
             DTEND: this.state.endDate,
             RRULE: this.state.recurrenceFreq,
