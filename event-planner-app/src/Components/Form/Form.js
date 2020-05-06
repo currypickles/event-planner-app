@@ -1,43 +1,111 @@
 import React, { Component } from 'react';
 import TitleInput from '../Input/TitleInput';
+import Timezone from '../Input/Timezone';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
-import GeoInput from '../Input/GeoInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
+import Recurrence from '../Input/Recurrence';
+import DateTime from '../DateTime/DateTime';
 import './Form.css';
 
 class Form extends Component {
     state = {
         titleInput: '',
+        timezone: 'Pacific/Honolulu',
+        timezoneOffsetFrom: -1000,
+        timezoneOffsetTo: -1000,
+        timezoneName: 'HST',
+        timezoneStart: '19700101T000000',
+        startDate: new Date(),
+        endDate: new Date(),
+        stamp: new Date(),
         titleCharCounter: 0,
         description: '',
         location: '',
-        geo: { lat: 0, lon: 0 },
         desCharCounter: 0,
         classification: 'PUBLIC',
         priority: '0',
         attendees: [],
         organizer: '',
         resources: '',
+        recurrenceFreq: 'ONCE',
+        recurrenceDate: '',
+        recurrIsChecked: false,
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
-            attendeeErrMsg: ''
+            attendeeErrMsg: '',
+            recurErrMsg: ''
         }
     };
+
+    handleStartDate = date => {
+        this.setState({
+            startDate: date,
+            endDate: date
+        });
+    };
+
+    handleEndDate = date => {
+        this.setState({
+            endDate: date
+        });
+        if (this.state.startDate === '') { this.setState({ startDate: date }); };
+    };
+
+    handleTimezone = (event) => {
+        console.log("I was here");
+        const name = event.target.value;
+        const timezoneOffsets = {
+            Hawaii: -1000,
+            New_York: { daylight: '-0400', standard: '-0500' }
+        };
+        const timezoneNames = {
+            Hawaii: 'HST',
+            New_York: { daylight: 'EDT', standard: 'EST' }
+        };
+        const timezoneStarts = {
+            Hawaii: '19700101T000000',
+            New_York: { daylight: '19700308T020000', standard: '19701101T020000' }
+        };
+
+        switch (name) {
+            case 'Pacific/Honolulu':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Hawaii,
+                    timezoneOffsetTo: timezoneOffsets.Hawaii,
+                    timezoneName : timezoneNames.Hawaii,
+                    timezoneStart: timezoneStarts.Hawaii
+                });
+                break;
+            case 'America/New_York':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.New_York.daylight,
+                    timezoneOffsetTo: timezoneOffsets.New_York.standard,
+                    timezoneName: timezoneNames.New_York.standard,
+                    timezoneStart: timezoneStarts.New_York.standard
+                });
+                break;
+            default:
+        }
+    };
+
+    handleRecurrenceChkBx = () => { 
+        this.setState({ recurrIsChecked: !this.state.recurrIsChecked }); 
+        if(this.state.recurrIsChecked === false) { this.setState({ recurrenceDate: '' }); }
+    };
+
+    handleRecurrenceDate = date => { this.setState({ recurrenceDate: date }); };
+
+    handleRecurrenceFreq = () => { this.setState({ recurrenceDate: '', recurrIsChecked: false }); };
 
     handleCharLimit = (event) => {
         this.setState({ [event.target.id]: event.target.value.length });
     }
-
-    // handleGeoFormat = (event) => {
-    //     var latlon = event.target.value.split(';');
-    //     this.setState({geo: {lat: latlon[0], lon:latlon[1]}});
-    // }
 
     handleNumAttendees = (event) => {
         this.setState(prevState => ({
@@ -76,8 +144,33 @@ class Form extends Component {
         return parts.join('\r\n ');
     }
 
-    validateForm(name, email, attendee) {
+    /************************************************************
+    * Time format
+    *************************************************************/
+    timeFormat(str, date) {
+        const time = {
+            seconds: '',
+            minutes: '',
+            hours: '',
+            num_hours: '',
+            month: '',
+            day: '',
+            year: ''
+        };
+      
+        str = date.toString().substr(4,20);
+        time.month = str.substr(0,3);
+        time.day = str.substr(4,2);
+        time.year = str.substr(7,4);
+        time.hours = str.substr(12, 2);
+        time.minutes = str.substr(15, 2);
+        time.seconds = str.substr(18, 2);
+        return time;
+    }
+
+    validateForm(name, email, attendee, startDate, recurrenceDate) {
         const validEmailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
+        const recurStartDate = new Date(startDate); // This is important, need to create a new date ref
         let errors = {};
         if (name.length === 0 || (name.length >= 0 && name.trim() === '')) {
             errors = { ...errors, titleErrMsg: 'Title is required!' };
@@ -93,41 +186,49 @@ class Form extends Component {
                 errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
             }
         });
+        if ((recurrenceDate < recurStartDate.setHours(0,0,0,0)) && recurrenceDate !== '' && this.state.recurrIsChecked) {
+            errors = { ...errors, recurErrMsg: 'Can\'t repeat before start date!' }
+        }
+        if (this.state.recurrIsChecked && recurrenceDate === '') {
+            errors = { ...errors, recurErrMsg: 'Enter a date to repeat until!' }
+        }
         return errors;
     }
 
     downloadTxtFile = (e) => {
         e.preventDefault();
 
-        const errors = this.validateForm(this.state.titleInput, this.state.organizer, this.state.attendees.map(x => x.mailto));
-        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg') || errors.hasOwnProperty('attendeeErrMsg')) {
+        const errors = this.validateForm(this.state.titleInput, this.state.organizer, this.state.attendees.map(x => x.mailto), this.state.startDate, this.state.recurrenceDate);
+        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg') || errors.hasOwnProperty('attendeeErrMsg') || errors.hasOwnProperty('recurErrMsg')) {
             this.setState({ errors });
             console.log(errors)
             return;
         }
 
-        var latlon = this.state.geo.split(';');
-        var myLat = parseFloat(latlon[0]);
-        var myLon = parseFloat(latlon[1]);
-        this.setState({geo: {lat: myLat, lon: myLon}});
-
-
-
         const newEvent = {
             BEGIN: 'VCALENDAR',
+            BEGIN3: 'VTIMEZONE',
+            TZID: this.state.timezone,
+            BEGIN4: 'STANDARD',
+            TZOFFSETFROM: this.state.timezoneOffsetFrom,
+            TZOFFSETTO: this.state.timezoneOffsetTo,
+            TZNAME: this.state.timezoneName,
+            ZONE_START: this.state.timezoneStart,
+            END4: 'STANDARD',
+            END3: 'VTIMEZONE',
             VERSION: '2.0',
             PRODID: '-//Team Curry Pickles//Ical Event App//EN',
             BEGIN2: 'VEVENT',
             PRIORITY: this.state.priority,
-            DTSTAMP: '2020026T230518Z',
+            DTSTAMP: this.state.stamp,
             UID: Math.random().toString(), // Placeholder for now 
-            DTSTART: '20200306T120000',
-            DTEND: '20200306T130000',
+            DTSTART: this.state.startDate,
+            DTEND: this.state.endDate,
+            RRULE: this.state.recurrenceFreq,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
-            GEO: this.state.geo,
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
@@ -140,13 +241,69 @@ class Form extends Component {
         const event = [];
         for(let el in newEvent) {
             let str = '';
+            const months = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07',
+                Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
+            if(el.match('DTSTART')) {
+                if (this.state.startDate === null || this.state.startDate < this.state.stamp) { return; } // For validation check DateTime Component
+                const time = this.timeFormat(str, this.state.startDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
+                event.push(str);
+                continue;
+            }
+            if(el.match('DTEND')) {
+                if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
+                if (this.state.endDate.getFullYear() !== this.state.startDate.getFullYear() && this.state.recurrenceFreq !== 'ONCE') { return; }
+                const time = this.timeFormat(str, this.state.endDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
+                event.push(str);
+                continue;
+            }
+            if (el.match('RRULE')) {
+                if (newEvent[el] === 'ONCE') { continue; }
+                const time = this.timeFormat(str, this.state.recurrenceDate);
+                if (newEvent[el] === 'MONTHLY') { 
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTHDAY=${time.day}\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
+                    }
+                } else if (newEvent[el] === 'YEARLY') {
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]};BYMONTH=${this.state.startDate.getMonth()+1};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
+                    }
+                } else {
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]}\r\n`;
+                    }
+                }
+                event.push(this.foldLine(str));
+                continue;
+            }
+
             if (el.match(/BEGIN[0-9]/)) {
                 str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
                 continue;
             }
+
+            if (el.match('ZONE_START')) {
+                str = `DTSTART:${newEvent[el]}\r\n`;
+                event.push(str);
+                continue;
+            }
+
             if (el.match(/END[0-9]/)) {
                 str = `END:${newEvent[el]}\r\n`;
+                event.push(str);
+                continue;
+            }
+            if (el.match('DTSTAMP')) {
+                const time = this.timeFormat(str, this.state.stamp);
+                str = `${el}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                 event.push(str);
                 continue;
             }
@@ -186,9 +343,24 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
-                    <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter}/>
+                    <DateTime selectStart={this.state.startDate} 
+                              selectEnd={this.state.endDate} 
+                              startDate={date => this.handleStartDate(date)} 
+                              endDate={date => this.handleEndDate(date)}
+                              stamp={this.state.stamp} 
+                              recurFreq={this.state.recurrenceFreq} />
+                    <Timezone name='timezone' select={this.handleTimezone} />
+                    <Recurrence name='recurrenceFreq' 
+                                selected={this.state.recurrenceDate} 
+                                recur={this.state.recurrenceFreq} 
+                                date={date => this.handleRecurrenceDate(date)}
+                                freq={this.handleRecurrenceFreq}
+                                startDate={this.state.startDate}
+                                checked={this.handleRecurrenceChkBx}
+                                isChecked={this.state.recurrIsChecked}
+                                errMsg={this.state.errors.recurErrMsg} />
+                    <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
                     <LocationInput name='location' />
-                    <GeoInput name='geo' />
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />
