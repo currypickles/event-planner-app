@@ -184,7 +184,7 @@ class Form extends Component {
         let length = 75;
         while(line.length > length) {
             parts.push(line.slice(0, length));
-            line = line.slice(length)
+            line = line.slice(length);
             length = 74;
         }
         parts.push(line);
@@ -304,7 +304,7 @@ class Form extends Component {
                 if (newEvent[el] === 'ONCE') { continue; }
 
 
-                let my_date = new Date(this.state.recurrenceDate.getTime());
+                let my_date = new Date(this.state.recurrenceDate);
 
 
                 my_date.setHours(this.state.startDate.getHours());
