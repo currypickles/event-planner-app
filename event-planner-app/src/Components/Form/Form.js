@@ -10,6 +10,7 @@ import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
 import Recurrence from '../Input/Recurrence';
 import DateTime from '../DateTime/DateTime';
+import GeoInput from '../Input/GeoInput';
 import './Form.css';
 
 class Form extends Component {
@@ -35,6 +36,7 @@ class Form extends Component {
         recurrenceFreq: 'ONCE',
         recurrenceDate: '',
         recurrIsChecked: false,
+        geo: '21.3069444;-157.8583333',
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
@@ -93,6 +95,7 @@ class Form extends Component {
                     timezoneOffsetTo: timezoneOffsets.Hawaii.standard,
                     timezoneName : timezoneNames.Hawaii.standard,
                     timezoneStart: timezoneStarts.Hawaii.standard,
+                    geo: '21.3069444;-157.8583333'
                 });
                 break;
             case 'America/Anchorage':
@@ -100,7 +103,8 @@ class Form extends Component {
                     timezoneOffsetFrom: timezoneOffsets.Anchorage.daylight,
                     timezoneOffsetTo: timezoneOffsets.Anchorage.standard,
                     timezoneName: timezoneNames.Anchorage.standard,
-                    timezoneStart: timezoneStarts.Anchorage.standard
+                    timezoneStart: timezoneStarts.Anchorage.standard,
+                    geo: '61.512619;-149.6001129'
                 });
                 break;
             case 'America/Los_Angeles':
@@ -108,7 +112,8 @@ class Form extends Component {
                     timezoneOffsetFrom: timezoneOffsets.Los_Angeles.daylight,
                     timezoneOffsetTo: timezoneOffsets.Los_Angeles.standard,
                     timezoneName: timezoneNames.Los_Angeles.standard,
-                    timezoneStart: timezoneStarts.Los_Angeles.standard
+                    timezoneStart: timezoneStarts.Los_Angeles.standard,
+                    geo: '34.0522342;-118.2436849'
                 });
                 break;
             case 'America/Denver':
@@ -116,7 +121,8 @@ class Form extends Component {
                     timezoneOffsetFrom: timezoneOffsets.Denver.daylight,
                     timezoneOffsetTo: timezoneOffsets.Denver.standard,
                     timezoneName: timezoneNames.Denver.standard,
-                    timezoneStart: timezoneStarts.Denver.standard
+                    timezoneStart: timezoneStarts.Denver.standard,
+                    geo: '43.6134987;-116.2034531'
                 });
                 break;
             case 'America/Chicago':
@@ -124,7 +130,8 @@ class Form extends Component {
                     timezoneOffsetFrom: timezoneOffsets.Chicago.daylight,
                     timezoneOffsetTo: timezoneOffsets.Chicago.standard,
                     timezoneName: timezoneNames.Chicago.standard,
-                    timezoneStart: timezoneStarts.Chicago.standard
+                    timezoneStart: timezoneStarts.Chicago.standard,
+                    geo: '41.8781136;-87.6297982'
                 });
                 break;
             case 'America/New_York':
@@ -132,7 +139,8 @@ class Form extends Component {
                     timezoneOffsetFrom: timezoneOffsets.New_York.daylight,
                     timezoneOffsetTo: timezoneOffsets.New_York.standard,
                     timezoneName: timezoneNames.New_York.standard,
-                    timezoneStart: timezoneStarts.New_York.standard
+                    timezoneStart: timezoneStarts.New_York.standard,
+                    geo: '42.331427;-83.0457538',
                 });
                 break;
             default:
@@ -279,6 +287,7 @@ class Form extends Component {
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
+            GEO: this.state.geo,
             END2: 'VEVENT',
             END: 'VCALENDAR',
         };
