@@ -252,6 +252,7 @@ class Form extends Component {
             }
             if(el.match('DTEND')) {
                 if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
+                if (this.state.endDate.getFullYear() !== this.state.startDate.getFullYear() && this.state.recurrenceFreq !== 'ONCE') { return; }
                 const time = this.timeFormat(str, this.state.endDate);
                 str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
                 event.push(str);
@@ -346,7 +347,8 @@ class Form extends Component {
                               selectEnd={this.state.endDate} 
                               startDate={date => this.handleStartDate(date)} 
                               endDate={date => this.handleEndDate(date)}
-                              stamp={this.state.stamp} />
+                              stamp={this.state.stamp} 
+                              recurFreq={this.state.recurrenceFreq} />
                     <Timezone name='timezone' select={this.handleTimezone} />
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 

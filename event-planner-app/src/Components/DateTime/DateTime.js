@@ -14,6 +14,10 @@ const dateTime = (props)  => {
     if (props.selectEnd < props.selectStart) {
         errMsg = <div><label style={{fontSize: '10px', color: 'red'}}>Fix end time!</label></div>;
     }
+
+    if(props.selectStart !== null && props.selectEnd !== null && props.selectEnd.getFullYear() !== props.selectStart.getFullYear() && props.recurFreq !== 'ONCE') {
+        errMsg = <div><label style={{fontSize: '10px', color: 'red'}}>End year must be the same as start year if repeat is not once!</label></div>;
+    }
     
     if (props.selectStart === null) {
         minStartTime = date;
