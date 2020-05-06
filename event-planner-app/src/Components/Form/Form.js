@@ -298,13 +298,7 @@ class Form extends Component {
                 event.push(str);
                 continue;
             }
-            // if(el.match('DTEND')) {
-            //     if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
-            //     const time = this.timeFormat(str, this.state.endDate);
-            //     str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
-            //     event.push(str);
-            //     continue;
-            // }
+
             if (el.match('RRULE')) {
 
                 if (newEvent[el] === 'ONCE') { continue; }
@@ -420,7 +414,8 @@ class Form extends Component {
                               selectEnd={this.state.endDate} 
                               startDate={date => this.handleStartDate(date)} 
                               endDate={date => this.handleEndDate(date)}
-                              stamp={this.state.stamp} />
+                              stamp={this.state.stamp} 
+                              recurFreq={this.state.recurrenceFreq} />
                     <Timezone name='timezone' select={this.handleTimezone} />
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
