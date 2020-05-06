@@ -282,6 +282,7 @@ class Form extends Component {
             END2: 'VEVENT',
             END: 'VCALENDAR',
         };
+        
 
         // Iterates over the newEvent object and puts each key and value into
         // an event array with the format - key:value as a string
@@ -307,25 +308,33 @@ class Form extends Component {
             if (el.match('RRULE')) {
 
                 if (newEvent[el] === 'ONCE') { continue; }
-                this.state.recurrenceDate.setHours(this.state.startDate.getHours());
-                this.state.recurrenceDate.setMinutes(this.state.startDate.getMinutes());
-                this.state.recurrenceDate.setSeconds(this.state.startDate.getSeconds());
-                const my_date = this.state.recurrenceDate
-                console.log(my_date)
-                my_date.setHours(my_date.getHours()+10);
-                console.log(my_date)
 
-                const time = this.timeFormat(str, my_date);
-                console.log(time);
+
+                let my_date = new Date(this.state.recurrenceDate.getTime());
+
+
+                my_date.setHours(this.state.startDate.getHours());
+                my_date.setMinutes(this.state.startDate.getMinutes());
+                my_date.setSeconds(this.state.startDate.getSeconds());
+
+
+                my_date.setHours(my_date.getHours()+10);
+
+
+                let time = this.timeFormat(str, my_date);
+                let time2 = this.timeFormat(str, this.state.startDate);
+
+
+
                 if (newEvent[el] === 'MONTHLY') { 
                     if (this.state.recurrIsChecked) {
-                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time.day}\r\n`;
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time2.day}\r\n`;
                     } else {
                         str = `${el}:FREQ=${newEvent[el]};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
                     }
                 } else if (newEvent[el] === 'YEARLY') {
                     if (this.state.recurrIsChecked) {
-                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time2.month]};BYMONTHDAY=${time2.day}\r\n`;
                     } else {
                         str = `${el}:FREQ=${newEvent[el]};BYMONTH=${this.state.startDate.getMonth()+1};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
                     }
