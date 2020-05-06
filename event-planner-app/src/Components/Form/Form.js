@@ -13,7 +13,7 @@ import DateTime from '../DateTime/DateTime';
 import './Form.css';
 
 class Form extends Component {
-    state = {
+        state = {
         titleInput: '',
         timezone: 'Pacific/Honolulu',
         timezoneOffsetFrom: -1000,
@@ -61,25 +61,70 @@ class Form extends Component {
         console.log("I was here");
         const name = event.target.value;
         const timezoneOffsets = {
-            Hawaii: -1000,
-            New_York: { daylight: '-0400', standard: '-0500' }
+            Hawaii: {standard: '-1000'},
+            Anchorage: {daylight: '-0800', standard: '-0900'},
+            Los_Angeles: {daylight: '-0700', standard: '-0800'},
+            Denver: {daylight: '-0600', standard: '-0700' },
+            Chicago: {daylight: '-0500', standard: '-0600'},
+            New_York: {daylight: '-0400', standard: '-0500'}
         };
+
         const timezoneNames = {
-            Hawaii: 'HST',
+            Hawaii: {standard: 'HST'},
+            Anchorage: { daylight: 'AKDT', standard: 'AKST' },
+            Los_Angeles: { daylight: 'PDT', standard: 'PST' },
+            Denver: {daylight: 'MDT', standard: 'MST'},
+            Chicago: { daylight: 'CDT', standard: 'CST' },
             New_York: { daylight: 'EDT', standard: 'EST' }
         };
         const timezoneStarts = {
-            Hawaii: '19700101T000000',
+            Hawaii: { standard: '19700101T000000' },
+            Anchorage: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Los_Angeles: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Denver: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Chicago: { daylight: '19700308T020000', standard: '19701101T020000' },
             New_York: { daylight: '19700308T020000', standard: '19701101T020000' }
         };
 
         switch (name) {
             case 'Pacific/Honolulu':
                 this.setState({
-                    timezoneOffsetFrom: timezoneOffsets.Hawaii,
-                    timezoneOffsetTo: timezoneOffsets.Hawaii,
-                    timezoneName : timezoneNames.Hawaii,
-                    timezoneStart: timezoneStarts.Hawaii
+                    timezoneOffsetFrom: timezoneOffsets.Hawaii.standard,
+                    timezoneOffsetTo: timezoneOffsets.Hawaii.standard,
+                    timezoneName : timezoneNames.Hawaii.standard,
+                    timezoneStart: timezoneStarts.Hawaii.standard,
+                });
+                break;
+            case 'America/Anchorage':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Anchorage.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Anchorage.standard,
+                    timezoneName: timezoneNames.Anchorage.standard,
+                    timezoneStart: timezoneStarts.Anchorage.standard
+                });
+                break;
+            case 'America/Los_Angeles':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Los_Angeles.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Los_Angeles.standard,
+                    timezoneName: timezoneNames.Los_Angeles.standard,
+                    timezoneStart: timezoneStarts.Los_Angeles.standard
+                });
+                break;
+            case 'America/Denver':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Denver.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Denver.standard,
+                    timezoneName: timezoneNames.Denver.standard,
+                    timezoneStart: timezoneStarts.Denver.standard
+                });
+                break;
+            case 'America/Chicago':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Chicago.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Chicago.standard,
+                    timezoneName: timezoneNames.Chicago.standard,
+                    timezoneStart: timezoneStarts.Chicago.standard
                 });
                 break;
             case 'America/New_York':
@@ -99,7 +144,9 @@ class Form extends Component {
         if(this.state.recurrIsChecked === false) { this.setState({ recurrenceDate: '' }); }
     };
 
-    handleRecurrenceDate = date => { this.setState({ recurrenceDate: date }); };
+    handleRecurrenceDate = date => {
+        this.setState({ recurrenceDate: date });
+    };
 
     handleRecurrenceFreq = () => { this.setState({ recurrenceDate: '', recurrIsChecked: false }); };
 
@@ -221,10 +268,10 @@ class Form extends Component {
             BEGIN2: 'VEVENT',
             PRIORITY: this.state.priority,
             DTSTAMP: this.state.stamp,
-            UID: Math.random().toString(), // Placeholder for now 
+            UID: Math.random().toString() + '@teamcurrypickles',
             DTSTART: this.state.startDate,
-            DTEND: this.state.endDate,
             RRULE: this.state.recurrenceFreq,
+            DTEND: this.state.endDate,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
@@ -235,6 +282,7 @@ class Form extends Component {
             END2: 'VEVENT',
             END: 'VCALENDAR',
         };
+        
 
         // Iterates over the newEvent object and puts each key and value into
         // an event array with the format - key:value as a string
@@ -250,37 +298,56 @@ class Form extends Component {
                 event.push(str);
                 continue;
             }
-            if(el.match('DTEND')) {
-                if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
-                if (this.state.endDate.getFullYear() !== this.state.startDate.getFullYear() && this.state.recurrenceFreq !== 'ONCE') { return; }
-                const time = this.timeFormat(str, this.state.endDate);
-                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
-                event.push(str);
-                continue;
-            }
+
             if (el.match('RRULE')) {
+
                 if (newEvent[el] === 'ONCE') { continue; }
-                const time = this.timeFormat(str, this.state.recurrenceDate);
+
+
+                let my_date = new Date(this.state.recurrenceDate.getTime());
+
+
+                my_date.setHours(this.state.startDate.getHours());
+                my_date.setMinutes(this.state.startDate.getMinutes());
+                my_date.setSeconds(this.state.startDate.getSeconds());
+
+
+                my_date.setHours(my_date.getHours()+10);
+
+
+                let time = this.timeFormat(str, my_date);
+                let time2 = this.timeFormat(str, this.state.startDate);
+
+
+
                 if (newEvent[el] === 'MONTHLY') { 
                     if (this.state.recurrIsChecked) {
-                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTHDAY=${time.day}\r\n`;
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time2.day}\r\n`;
                     } else {
                         str = `${el}:FREQ=${newEvent[el]};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
                     }
                 } else if (newEvent[el] === 'YEARLY') {
                     if (this.state.recurrIsChecked) {
-                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time2.month]};BYMONTHDAY=${time2.day}\r\n`;
                     } else {
                         str = `${el}:FREQ=${newEvent[el]};BYMONTH=${this.state.startDate.getMonth()+1};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
                     }
                 } else {
                     if (this.state.recurrIsChecked) {
-                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T000000Z\r\n`;
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                     } else {
                         str = `${el}:FREQ=${newEvent[el]}\r\n`;
                     }
                 }
                 event.push(this.foldLine(str));
+                continue;
+            }
+
+            if(el.match('DTEND')) {
+                if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
+                const time = this.timeFormat(str, this.state.endDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
+                event.push(str);
                 continue;
             }
 

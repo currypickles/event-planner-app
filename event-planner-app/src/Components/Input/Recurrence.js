@@ -15,7 +15,6 @@ const recurrence = (props)  => {
             <label style={{display: 'block'}}>Until:
                 <DatePicker selected={props.selected}
                         onChange={props.date}
-                        dateFormat="MMMM d, yyyy" 
                         minDate={props.startDate}
                         peekNextMonth
                         showMonthDropdown
