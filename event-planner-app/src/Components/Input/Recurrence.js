@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const recurrence = (props)  => {
     const displayCheck = props.recur !== 'ONCE' ?
         <div>
-            <label style={{display: 'inline', fontSize: '8px'}}>Check for repeat end date or uncheck to repeat forever:
+            <label style={{display: 'inline'}}>Check for repeat end date:
                 <input type='checkbox' onChange={props.checked} checked={props.isChecked} style={{width: '10%', display: 'inline'}} />
             </label>        
         </div> : '';
@@ -16,6 +16,7 @@ const recurrence = (props)  => {
                 <DatePicker selected={props.selected}
                         onChange={props.date}
                         minDate={props.startDate}
+                        dateFormat="MMMM d, yyyy"
                         peekNextMonth
                         showMonthDropdown
                         showYearDropdown
