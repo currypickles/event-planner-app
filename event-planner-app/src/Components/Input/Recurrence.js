@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const recurrence = (props)  => {
     const displayCheck = props.recur !== 'ONCE' ?
         <div>
-            <label style={{display: 'inline'}}>Check for repeat end date:
+            <label style={{display: 'inline'}}>Check for repeat end date (optional):
                 <input type='checkbox' onChange={props.checked} checked={props.isChecked} style={{width: '10%', display: 'inline'}} />
             </label>        
         </div> : '';
