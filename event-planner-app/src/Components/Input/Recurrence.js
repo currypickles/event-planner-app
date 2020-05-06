@@ -16,6 +16,7 @@ const recurrence = (props)  => {
                 <DatePicker selected={props.selected}
                         onChange={props.date}
                         minDate={props.startDate}
+                        dateFormat="MMMM d, yyyy"
                         peekNextMonth
                         showMonthDropdown
                         showYearDropdown
