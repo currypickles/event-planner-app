@@ -13,7 +13,7 @@ import DateTime from '../DateTime/DateTime';
 import './Form.css';
 
 class Form extends Component {
-    state = {
+        state = {
         titleInput: '',
         timezone: 'Pacific/Honolulu',
         timezoneOffsetFrom: -1000,
@@ -61,25 +61,70 @@ class Form extends Component {
         console.log("I was here");
         const name = event.target.value;
         const timezoneOffsets = {
-            Hawaii: -1000,
-            New_York: { daylight: '-0400', standard: '-0500' }
+            Hawaii: {standard: '-1000'},
+            Anchorage: {daylight: '-0800', standard: '-0900'},
+            Los_Angeles: {daylight: '-0700', standard: '-0800'},
+            Denver: {daylight: '-0600', standard: '-0700' },
+            Chicago: {daylight: '-0500', standard: '-0600'},
+            New_York: {daylight: '-0400', standard: '-0500'}
         };
+
         const timezoneNames = {
-            Hawaii: 'HST',
+            Hawaii: {standard: 'HST'},
+            Anchorage: { daylight: 'AKDT', standard: 'AKST' },
+            Los_Angeles: { daylight: 'PDT', standard: 'PST' },
+            Denver: {daylight: 'MDT', standard: 'MST'},
+            Chicago: { daylight: 'CDT', standard: 'CST' },
             New_York: { daylight: 'EDT', standard: 'EST' }
         };
         const timezoneStarts = {
-            Hawaii: '19700101T000000',
+            Hawaii: { standard: '19700101T000000' },
+            Anchorage: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Los_Angeles: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Denver: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Chicago: { daylight: '19700308T020000', standard: '19701101T020000' },
             New_York: { daylight: '19700308T020000', standard: '19701101T020000' }
         };
 
         switch (name) {
             case 'Pacific/Honolulu':
                 this.setState({
-                    timezoneOffsetFrom: timezoneOffsets.Hawaii,
-                    timezoneOffsetTo: timezoneOffsets.Hawaii,
-                    timezoneName : timezoneNames.Hawaii,
-                    timezoneStart: timezoneStarts.Hawaii
+                    timezoneOffsetFrom: timezoneOffsets.Hawaii.standard,
+                    timezoneOffsetTo: timezoneOffsets.Hawaii.standard,
+                    timezoneName : timezoneNames.Hawaii.standard,
+                    timezoneStart: timezoneStarts.Hawaii.standard,
+                });
+                break;
+            case 'America/Anchorage':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Anchorage.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Anchorage.standard,
+                    timezoneName: timezoneNames.Anchorage.standard,
+                    timezoneStart: timezoneStarts.Anchorage.standard
+                });
+                break;
+            case 'America/Los_Angeles':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Los_Angeles.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Los_Angeles.standard,
+                    timezoneName: timezoneNames.Los_Angeles.standard,
+                    timezoneStart: timezoneStarts.Los_Angeles.standard
+                });
+                break;
+            case 'America/Denver':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Denver.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Denver.standard,
+                    timezoneName: timezoneNames.Denver.standard,
+                    timezoneStart: timezoneStarts.Denver.standard
+                });
+                break;
+            case 'America/Chicago':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Chicago.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Chicago.standard,
+                    timezoneName: timezoneNames.Chicago.standard,
+                    timezoneStart: timezoneStarts.Chicago.standard
                 });
                 break;
             case 'America/New_York':
