@@ -5,6 +5,7 @@ import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
+//<<<<<<< Updated upstream
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
@@ -12,6 +13,7 @@ import Recurrence from '../Input/Recurrence';
 import DateTime from '../DateTime/DateTime';
 import GeoInput from '../Input/GeoInput';
 import './Form.css';
+
 
 class Form extends Component {
         state = {
