@@ -5,7 +5,6 @@ import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
-//<<<<<<< Updated upstream
 import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
