@@ -445,7 +445,9 @@ class Form extends Component {
                                handleNumAttendees={this.handleNumAttendees} 
                                errMsg={this.state.errors.attendeeErrMsg} />
                     <ResourcesInput name='resources' />
-                    <input type="submit" value="Submit" />
+                    <button>
+                        <input type="submit" value="Submit" />
+                    </button>
                 </form>
             </div>
         );
