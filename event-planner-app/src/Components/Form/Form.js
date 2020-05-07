@@ -3,7 +3,6 @@ import TitleInput from '../Input/TitleInput';
 import Timezone from '../Input/Timezone';
 import DescriptionInput from '../Input/DescriptionInput';
 import LocationInput from '../Input/LocationInput';
-// import GeoInput from '../Input/GeoInput';
 import Classification from '../Input/Classification';
 import PriorityInput from '../Input/PriorityInput';
 //<<<<<<< Updated upstream
@@ -11,23 +10,25 @@ import Attendees from '../Input/Attendees/Attendees';
 import OrganizerInput from '../Input/OrganizerInput';
 import ResourcesInput from '../Input/ResourcesInput';
 import Recurrence from '../Input/Recurrence';
+import DateTime from '../DateTime/DateTime';
+import GeoInput from '../Input/GeoInput';
 import './Form.css';
-import DatePicker from "react-datepicker";
-//import "/react-datepicker/dist/react-datepicker.css";
-//=======
 
-//>>>>>>> Stashed changes
 
 class Form extends Component {
-    state = {
+        state = {
         titleInput: '',
+        timezone: 'Pacific/Honolulu',
+        timezoneOffsetFrom: -1000,
+        timezoneOffsetTo: -1000,
+        timezoneName: 'HST',
+        timezoneStart: '19700101T000000',
         startDate: new Date(),
         endDate: new Date(),
-        timezone: 'HST',
+        stamp: new Date(),
         titleCharCounter: 0,
         description: '',
         location: '',
-        geo: { lat: 0, lon: 0 },
         desCharCounter: 0,
         classification: 'PUBLIC',
         priority: '0',
@@ -35,38 +36,133 @@ class Form extends Component {
         organizer: '',
         resources: '',
         recurrenceFreq: 'ONCE',
-        recurrenceDate: new Date(),
+        recurrenceDate: '',
+        recurrIsChecked: false,
+        geo: '21.3069444;-157.8583333',
         errors: {
             titleErrMsg: '',
             emailErrMsg: '',
-            attendeeErrMsg: ''
+            attendeeErrMsg: '',
+            recurErrMsg: ''
         }
     };
 
-    handleChange = date => {
+    handleStartDate = date => {
         this.setState({
-            startDate: date
-        });
-    };
-
-    handleChange2 = date => {
-        this.setState({
+            startDate: date,
             endDate: date
         });
     };
 
+    handleEndDate = date => {
+        this.setState({
+            endDate: date
+        });
+        if (this.state.startDate === '') { this.setState({ startDate: date }); };
+    };
+
+    handleTimezone = (event) => {
+        console.log("I was here");
+        const name = event.target.value;
+        const timezoneOffsets = {
+            Hawaii: {standard: '-1000'},
+            Anchorage: {daylight: '-0800', standard: '-0900'},
+            Los_Angeles: {daylight: '-0700', standard: '-0800'},
+            Denver: {daylight: '-0600', standard: '-0700' },
+            Chicago: {daylight: '-0500', standard: '-0600'},
+            New_York: {daylight: '-0400', standard: '-0500'}
+        };
+
+        const timezoneNames = {
+            Hawaii: {standard: 'HST'},
+            Anchorage: { daylight: 'AKDT', standard: 'AKST' },
+            Los_Angeles: { daylight: 'PDT', standard: 'PST' },
+            Denver: {daylight: 'MDT', standard: 'MST'},
+            Chicago: { daylight: 'CDT', standard: 'CST' },
+            New_York: { daylight: 'EDT', standard: 'EST' }
+        };
+        const timezoneStarts = {
+            Hawaii: { standard: '19700101T000000' },
+            Anchorage: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Los_Angeles: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Denver: { daylight: '19700308T020000', standard: '19701101T020000' },
+            Chicago: { daylight: '19700308T020000', standard: '19701101T020000' },
+            New_York: { daylight: '19700308T020000', standard: '19701101T020000' }
+        };
+
+        switch (name) {
+            case 'Pacific/Honolulu':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Hawaii.standard,
+                    timezoneOffsetTo: timezoneOffsets.Hawaii.standard,
+                    timezoneName : timezoneNames.Hawaii.standard,
+                    timezoneStart: timezoneStarts.Hawaii.standard,
+                    geo: '21.3069444;-157.8583333'
+                });
+                break;
+            case 'America/Anchorage':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Anchorage.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Anchorage.standard,
+                    timezoneName: timezoneNames.Anchorage.standard,
+                    timezoneStart: timezoneStarts.Anchorage.standard,
+                    geo: '61.512619;-149.6001129'
+                });
+                break;
+            case 'America/Los_Angeles':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Los_Angeles.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Los_Angeles.standard,
+                    timezoneName: timezoneNames.Los_Angeles.standard,
+                    timezoneStart: timezoneStarts.Los_Angeles.standard,
+                    geo: '34.0522342;-118.2436849'
+                });
+                break;
+            case 'America/Denver':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Denver.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Denver.standard,
+                    timezoneName: timezoneNames.Denver.standard,
+                    timezoneStart: timezoneStarts.Denver.standard,
+                    geo: '43.6134987;-116.2034531'
+                });
+                break;
+            case 'America/Chicago':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.Chicago.daylight,
+                    timezoneOffsetTo: timezoneOffsets.Chicago.standard,
+                    timezoneName: timezoneNames.Chicago.standard,
+                    timezoneStart: timezoneStarts.Chicago.standard,
+                    geo: '41.8781136;-87.6297982'
+                });
+                break;
+            case 'America/New_York':
+                this.setState({
+                    timezoneOffsetFrom: timezoneOffsets.New_York.daylight,
+                    timezoneOffsetTo: timezoneOffsets.New_York.standard,
+                    timezoneName: timezoneNames.New_York.standard,
+                    timezoneStart: timezoneStarts.New_York.standard,
+                    geo: '42.331427;-83.0457538',
+                });
+                break;
+            default:
+        }
+    };
+
+    handleRecurrenceChkBx = () => { 
+        this.setState({ recurrIsChecked: !this.state.recurrIsChecked }); 
+        if(this.state.recurrIsChecked === false) { this.setState({ recurrenceDate: '' }); }
+    };
+
     handleRecurrenceDate = date => {
         this.setState({ recurrenceDate: date });
-    }
+    };
+
+    handleRecurrenceFreq = () => { this.setState({ recurrenceDate: '', recurrIsChecked: false }); };
 
     handleCharLimit = (event) => {
         this.setState({ [event.target.id]: event.target.value.length });
     }
-
-    // handleGeoFormat = (event) => {
-    //     var latlon = event.target.value.split(';');
-    //     this.setState({geo: {lat: latlon[0], lon:latlon[1]}});
-    // }
 
     handleNumAttendees = (event) => {
         this.setState(prevState => ({
@@ -98,7 +194,7 @@ class Form extends Component {
         let length = 75;
         while(line.length > length) {
             parts.push(line.slice(0, length));
-            line = line.slice(length)
+            line = line.slice(length);
             length = 74;
         }
         parts.push(line);
@@ -118,43 +214,20 @@ class Form extends Component {
             day: '',
             year: ''
         };
-        
-        console.log(date.toString());
+      
         str = date.toString().substr(4,20);
         time.month = str.substr(0,3);
         time.day = str.substr(4,2);
         time.year = str.substr(7,4);
-
         time.hours = str.substr(12, 2);
-
-        /* time.num_hours = parseInt(time.hours);
-        switch (this.state.timezone) {
-            case 'HST':
-                time.num_hours = time.num_hours + 10;
-                break;
-            case 'GMT-7':
-                time.num_hours = time.num_hours + 7;
-                break;
-            default:
-        }
-        if (time.hours < 0) {
-            time.hours += 24;
-        } else if (time.hours > 24) {
-            time.hours -= 24;
-        }
-        time.hours = time.num_hours.toString();
-        if (time.hours.length === 1) {
-            let zero = '0';
-            time.hours = zero + time.hours;
-        } */
-
         time.minutes = str.substr(15, 2);
         time.seconds = str.substr(18, 2);
         return time;
     }
 
-    validateForm(name, email, attendee) {
+    validateForm(name, email, attendee, startDate, recurrenceDate) {
         const validEmailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
+        const recurStartDate = new Date(startDate); // This is important, need to create a new date ref
         let errors = {};
         if (name.length === 0 || (name.length >= 0 && name.trim() === '')) {
             errors = { ...errors, titleErrMsg: 'Title is required!' };
@@ -170,49 +243,57 @@ class Form extends Component {
                 errors = { ...errors, attendeeErrMsg: 'Email is a duplicate!' }
             }
         });
+        if ((recurrenceDate < recurStartDate.setHours(0,0,0,0)) && recurrenceDate !== '' && this.state.recurrIsChecked) {
+            errors = { ...errors, recurErrMsg: 'Can\'t repeat before start date!' }
+        }
+        if (this.state.recurrIsChecked && recurrenceDate === '') {
+            errors = { ...errors, recurErrMsg: 'Enter a date to repeat until!' }
+        }
         return errors;
     }
 
     downloadTxtFile = (e) => {
         e.preventDefault();
 
-        const errors = this.validateForm(this.state.titleInput, this.state.organizer, this.state.attendees.map(x => x.mailto));
-        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg') || errors.hasOwnProperty('attendeeErrMsg')) {
+        const errors = this.validateForm(this.state.titleInput, this.state.organizer, this.state.attendees.map(x => x.mailto), this.state.startDate, this.state.recurrenceDate);
+        if (errors.hasOwnProperty('titleErrMsg') || errors.hasOwnProperty('emailErrMsg') || errors.hasOwnProperty('attendeeErrMsg') || errors.hasOwnProperty('recurErrMsg')) {
             this.setState({ errors });
             console.log(errors)
             return;
         }
 
-        // var latlon = this.state.geo.split(';');
-        // var myLat = parseFloat(latlon[0]);
-        // var myLon = parseFloat(latlon[1]);
-        // this.setState({geo: {lat: myLat, lon: myLon}});
-
-
-
         const newEvent = {
             BEGIN: 'VCALENDAR',
+            BEGIN3: 'VTIMEZONE',
+            TZID: this.state.timezone,
+            BEGIN4: 'STANDARD',
+            TZOFFSETFROM: this.state.timezoneOffsetFrom,
+            TZOFFSETTO: this.state.timezoneOffsetTo,
+            TZNAME: this.state.timezoneName,
+            ZONE_START: this.state.timezoneStart,
+            END4: 'STANDARD',
+            END3: 'VTIMEZONE',
             VERSION: '2.0',
             PRODID: '-//Team Curry Pickles//Ical Event App//EN',
             BEGIN2: 'VEVENT',
             PRIORITY: this.state.priority,
-            DTSTAMP: '2020026T230518Z',
-            UID: Math.random().toString(), // Placeholder for now 
+            DTSTAMP: this.state.stamp,
+            UID: Math.random().toString() + '@teamcurrypickles',
             DTSTART: this.state.startDate,
-            DTEND: this.state.endDate,
             RRULE: this.state.recurrenceFreq,
+            DTEND: this.state.endDate,
             CLASS: this.state.classification,
             SUMMARY: this.state.titleInput,
-            TZID: this.state.timezone,
             DESCRIPTION: this.state.description.replace(/\n/gi,'\\n'),
             LOCATION: this.state.location,
-            // GEO: this.state.geo,
             ORGANIZER: this.state.organizer,
             ATTENDEE: [...this.state.attendees],
             RESOURCES: this.state.resources.replace(/\s/gi, '').toUpperCase(),
+            GEO: this.state.geo,
             END2: 'VEVENT',
             END: 'VCALENDAR',
         };
+        
 
         // Iterates over the newEvent object and puts each key and value into
         // an event array with the format - key:value as a string
@@ -222,99 +303,85 @@ class Form extends Component {
             const months = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07',
                 Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
             if(el.match('DTSTART')) {
-                let seconds, minutes, hours, num_hours, month, day, year;
-                console.log(newEvent[el].toString());
-                str = newEvent[el].toString().substr(4,20);
-                month = str.substr(0,3);
-                day = str.substr(4,2);
-                year = str.substr(7,4);
-
-                hours = str.substr(12, 2);
-                num_hours = parseInt(hours);
-                switch (this.state.timezone) {
-                    case 'HST':
-                        num_hours = num_hours + 10;
-                        break;
-                    case 'GMT-7':
-                        num_hours = num_hours + 7;
-                        break;
-                    default:
-                }
-                if (hours < 0) {
-                    hours += 24;
-                } else if (hours > 24) {
-                    hours -= 24;
-                }
-                hours = num_hours.toString();
-                if (hours.length === 1) {
-                    let zero = '0';
-                    hours = zero + hours;
-                }
-
-                minutes = str.substr(15, 2);
-                seconds = str.substr(18, 2);
-                str = `${el}:${year}${months[month]}${day}T${hours}${minutes}${seconds}Z\n`
-                console.log(str);
+                if (this.state.startDate === null || this.state.startDate < this.state.stamp) { return; } // For validation check DateTime Component
+                const time = this.timeFormat(str, this.state.startDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
                 event.push(str);
                 continue;
             }
-            if(el.match('DTEND')) {
-                let seconds2, minutes2, hours2, num_hours2, month2, day2, year2;
-                console.log(newEvent[el].toString());
-                str = newEvent[el].toString().substr(4,20);
-                month2 = str.substr(0,3);
-                day2 = str.substr(4,2);
-                year2 = str.substr(7,4);
 
-                hours2 = str.substr(12, 2);
-                num_hours2 = parseInt(hours2);
-                switch (this.state.timezone) {
-                    case 'HST':
-                        num_hours2 = num_hours2 + 10;
-                        break;
-                    case 'GMT-7':
-                        num_hours2 = num_hours2 + 7;
-                        break;
-                    default:
-                }
-                if (hours2 < 0) {
-                    hours2 += 24;
-                } else if (hours2 > 24) {
-                    hours2 -= 24;
-                }
-                hours2 = num_hours2.toString();
-                if (hours2.length === 1) {
-                    let zero = '0';
-                    hours2 = zero + hours2;
-                }
-
-                minutes2 = str.substr(15, 2);
-                seconds2 = str.substr(18, 2);
-                str = `${el}:${year2}${months[month2]}${day2}T${hours2}${minutes2}${seconds2}Z\n`
-                console.log(str);
-                event.push(str);
-                continue;
-            }
             if (el.match('RRULE')) {
+
                 if (newEvent[el] === 'ONCE') { continue; }
-                const time = this.timeFormat(str, this.state.recurrenceDate);
+
+
+                let my_date = new Date(this.state.recurrenceDate);
+
+
+                my_date.setHours(this.state.startDate.getHours());
+                my_date.setMinutes(this.state.startDate.getMinutes());
+                my_date.setSeconds(this.state.startDate.getSeconds());
+
+
+                my_date.setHours(my_date.getHours()+10);
+
+
+                let time = this.timeFormat(str, my_date);
+                let time2 = this.timeFormat(str, this.state.startDate);
+
+
+
                 if (newEvent[el] === 'MONTHLY') { 
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time.day}\r\n`;
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTHDAY=${time2.day}\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
+                    }
                 } else if (newEvent[el] === 'YEARLY') {
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time.month]};BYMONTHDAY=${time.day}\r\n`;
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z;BYMONTH=${months[time2.month]};BYMONTHDAY=${time2.day}\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]};BYMONTH=${this.state.startDate.getMonth()+1};BYMONTHDAY=${this.state.startDate.getDate()}\r\n`;
+                    }
                 } else {
-                    str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                    if (this.state.recurrIsChecked) {
+                        str = `${el}:FREQ=${newEvent[el]};UNTIL=${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
+                    } else {
+                        str = `${el}:FREQ=${newEvent[el]}\r\n`;
+                    }
                 }
                 event.push(this.foldLine(str));
                 continue;
             }
+
+            if(el.match('DTEND')) {
+                if (this.state.endDate === null || this.state.endDate < this.state.startDate) { return; } // For validation check DateTime Component
+                const time = this.timeFormat(str, this.state.endDate);
+                str = `${el};TZID=${this.state.timezone}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}\r\n`;
+                event.push(str);
+                continue;
+            }
+
             if (el.match(/BEGIN[0-9]/)) {
                 str = `BEGIN:${newEvent[el]}\r\n`;
                 event.push(str);
                 continue;
             }
+
+            if (el.match('ZONE_START')) {
+                str = `DTSTART:${newEvent[el]}\r\n`;
+                event.push(str);
+                continue;
+            }
+
             if (el.match(/END[0-9]/)) {
                 str = `END:${newEvent[el]}\r\n`;
+                event.push(str);
+                continue;
+            }
+            if (el.match('DTSTAMP')) {
+                const time = this.timeFormat(str, this.state.stamp);
+                str = `${el}:${time.year}${months[time.month]}${time.day}T${time.hours}${time.minutes}${time.seconds}Z\r\n`;
                 event.push(str);
                 continue;
             }
@@ -354,26 +421,24 @@ class Form extends Component {
             <div>
                 <form onSubmit={this.downloadTxtFile} onChange={this.handleFormControl}>
                     <TitleInput name='titleInput' limitCounter={this.handleCharLimit} counted={this.state.titleCharCounter} errMsg={this.state.errors.titleErrMsg} />
-                    <DatePicker selected={this.state.startDate}
-                                onChange={date => this.handleChange(date)}
-                                showTimeSelect
-                                timeIntervals={15}
-                                timeCaption="Time"
-                                dateFormat="MMMM d, yyyy h:mm aa" />
-                    <DatePicker selected={this.state.endDate}
-                                onChange={date => this.handleChange2(date)}
-                                showTimeSelect
-                                timeIntervals={15}
-                                timeCaption="Time"
-                                dateFormat="MMMM d, yyyy h:mm aa" />
-                    <Timezone name='timezone' />
+                    <DateTime selectStart={this.state.startDate} 
+                              selectEnd={this.state.endDate} 
+                              startDate={date => this.handleStartDate(date)} 
+                              endDate={date => this.handleEndDate(date)}
+                              stamp={this.state.stamp} 
+                              recurFreq={this.state.recurrenceFreq} />
+                    <Timezone name='timezone' select={this.handleTimezone} />
                     <Recurrence name='recurrenceFreq' 
                                 selected={this.state.recurrenceDate} 
                                 recur={this.state.recurrenceFreq} 
-                                date={date => this.handleRecurrenceDate(date)} />
+                                date={date => this.handleRecurrenceDate(date)}
+                                freq={this.handleRecurrenceFreq}
+                                startDate={this.state.startDate}
+                                checked={this.handleRecurrenceChkBx}
+                                isChecked={this.state.recurrIsChecked}
+                                errMsg={this.state.errors.recurErrMsg} />
                     <DescriptionInput name='description' limitCounter={this.handleCharLimit} counted={this.state.desCharCounter} />
                     <LocationInput name='location' />
-                    {/*<GeoInput name='geo' />*/}
                     <Classification name='classification' />
                     <PriorityInput name='priority' />
                     <OrganizerInput name='organizer' errMsg={this.state.errors.emailErrMsg} />

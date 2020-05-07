@@ -3,19 +3,30 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const recurrence = (props)  => {
-    const datePicker = props.recur !== 'ONCE' ? 
-        <label>Until:
-            <DatePicker selected={props.selected}
-                    onChange={props.date}
-                    showTimeSelect
-                    timeIntervals={15}
-                    timeCaption="Time"
-                    dateFormat="MMMM d, yyyy h:mm aa" />
-        </label> : '';
+    const displayCheck = props.recur !== 'ONCE' ?
+        <div>
+            <label style={{display: 'inline'}}>Check for repeat end date:
+                <input type='checkbox' onChange={props.checked} checked={props.isChecked} style={{width: '10%', display: 'inline'}} />
+            </label>        
+        </div> : '';
+
+    const datePicker = props.isChecked && props.recur !== 'ONCE' ? 
+        <div>
+            <label style={{display: 'block'}}>Until:
+                <DatePicker selected={props.selected}
+                        onChange={props.date}
+                        minDate={props.startDate}
+                        dateFormat="MMMM d, yyyy"
+                        peekNextMonth
+                        showMonthDropdown
+                        showYearDropdown
+                        dropdownMode="select" />
+            </label>
+        </div> : '';
     return ( 
         <div>
             <label>Repeat:
-                <select name={props.name} defaultValue='ONCE' className='select-margin'>
+                <select name={props.name} onChange={props.freq} defaultValue='ONCE' className='select-margin'>
                     <option value='ONCE'>Once</option>
                     <option value='DAILY'>Daily</option>
                     <option value='WEEKLY'>Weekly</option>
@@ -23,7 +34,11 @@ const recurrence = (props)  => {
                     <option value='YEARLY'>Yearly</option>
                 </select>
             </label>
+            {displayCheck}
             {datePicker}
+            <label>
+                <div style={{fontSize: '10px', color: 'red'}}>{props.errMsg}</div>
+            </label>
         </div>
     );
 };
